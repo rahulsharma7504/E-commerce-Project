@@ -2,7 +2,7 @@ const dotenv=require('dotenv').config()
 
 const mongoose =require('mongoose');
 
-// Connect to MongoDB
+// Connect to MongoDB 
 const ConnectDB=async()=>{
     try {
         mongoose.connect(process.env.DB_String);
