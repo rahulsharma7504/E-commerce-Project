@@ -18,6 +18,7 @@ ConnectDB();
 
 // Here We Start the Middleware 
 app.use('/api',require('./Routes/User_Routes').userRoute)
+app.use('/api/admin',require('./Routes/Admin_Routes').adminRoutes)
 
 const PORT=process.env.PORT
 app.listen(PORT,()=>{

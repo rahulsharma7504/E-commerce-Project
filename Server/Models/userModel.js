@@ -5,6 +5,7 @@ const userSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: Number, required: true },
+    status: { type: String, default: 'active' },
     orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
     wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     role: { type: String, enum: ['user', 'admin', 'vendor'], default: 'user' },

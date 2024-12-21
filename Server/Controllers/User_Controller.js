@@ -35,7 +35,10 @@ const Login = async (req, res) => {
  
     if (!user) { 
         return res.status(400).send({ message: 'User does not exist' });
-    } 
+    } else if(user.status == 'inActive'){
+        return res.status(200).json({message:"Your Account is Not Active"})
+    }
+
 
     if (user) {
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -88,6 +91,7 @@ const updateProfile=async(req,res)=>{
     }
  
 }
+
 
 
 module.exports = {
