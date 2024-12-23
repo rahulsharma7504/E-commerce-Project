@@ -2,6 +2,7 @@ const userDB = require('../Models/userModel');
 const vendorDB = require('../Models/vendorModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const CategoryModel = require('../Models/categoryModel');
 
 const createVendor = async (req, res) => {
     try {
@@ -137,12 +138,75 @@ const DeleteAny = async (req, res) => {
     }
 };
 
+
+
+// Categorizes APIs and returns  them
+const getAllCategories = async (req, res) => {
+    try {
+        const allCategory = await CategoryModel.find();
+        res.status(200).json({ message: "All Category", Category: allCategory });
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+// Create categories
+const createCategory = async (req, res) => {
+    try {
+        const { name } = req.body;
+        const findexistCategory = await CategoryModel.findOne({ name: name });
+        if (findexistCategory) {
+            return res.status(401).send({ message: "Category Already Exist" });
+        }
+
+        const category = await new CategoryModel({
+            name: name.toLowerCase(), // Assuming you're using a predefined category name for now
+        }).save();
+        return res.status(200).json({ message: "Category Created", Category: category });
+    } catch (error) {
+        if (error) throw error;
+        return res.status(500).json({ error: "Internal Server Error" });
+
+    }
+}
+
+
+const updateCategory = async (req, res) => {
+    try {
+        const { name } = req.body;
+        const { id } = req.params;
+        const updateCat = await CategoryModel.findByIdAndUpdate({ _id: id }, { $set: { name: name } }, { new: true });
+        return res.status(200).json({ message: "Category Updated", Category: updateCat });
+    } catch (error) {
+        if (error) throw error;
+        return res.status(500).json({ error: "Internal Server Error" });
+
+    }
+}
+
+// Delete Category
+const DeleteCategory=async(req,res)=>{
+    try {
+        
+        const {id}=req.params;
+        const deleteCategory=await CategoryModel.findByIdAndDelete({_id:id});
+        res.status(200).json({ message: "Category Deleted", Category: deleteCategory });
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 module.exports = {
     createVendor,
     getAllUsers,
     Status,
     updateUserOrVendorDetails,
-    DeleteAny
+    DeleteAny,
+    getAllCategories,
+    createCategory,
+    updateCategory,
+    DeleteCategory
 }
 
 
