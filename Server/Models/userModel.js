@@ -8,6 +8,7 @@ const userSchema = mongoose.Schema({
     status: { type: String, default: 'active' },
     orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
     wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+    cart: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     role: { type: String, enum: ['user', 'admin', 'vendor'], default: 'user' },
 }, { timestamps: true }, { strict: false })
 
