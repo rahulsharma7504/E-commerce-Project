@@ -29,23 +29,23 @@ const Register = async (req, res) => {
 
     }
 }
-
+ 
 const Login = async (req, res) => {
     const { email, password } = req.body;
-
+    console.log(email, password);
     const user = await userDB.findOne({ email });
 
     if (!user) {
-        return res.status(400).send({ message: 'User does not exist' });
+        return res.status(401).send({ message: 'User does not exist' });
     } else if (user.status == 'inActive') {
-        return res.status(200).json({ message: "Your Account is Not Active" })
-    }
+        return res.status(400).json({ message: "Your Account is Not Active" })
+    }   
 
 
     if (user) {
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).send({ message: 'Invalid password' });
+            return res.status(400).json({ message: 'Invalid password' });
         }
         // Generate JWT
         const token = JWT.sign({ userId: user._id }, process.env.JWT_SECRET);

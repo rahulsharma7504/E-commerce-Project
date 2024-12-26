@@ -10,7 +10,11 @@ app.use(body_parser.urlencoded({extended:true}));
 app.use(express.json())
 // Use CORS for Client Side Requests
 app.use(cookieParser());
-app.use(CORS());
+app.use(CORS({
+    origin: ['http://localhost:3000', 'https://your-client-side-url.com'],
+    credentials: true  // needed for cookies to work over HTTPS
+ 
+}));
 app.use(express.json());
  
 // Connect-To-DB

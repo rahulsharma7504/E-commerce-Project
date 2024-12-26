@@ -6,7 +6,7 @@ const { isUser } = require('../Middleware/isUser')
 const User_Controller = require('../Controllers/User_Controller')
 
 //Authentication Apis
-userRoute.post('/signup', User_Controller.Register)
+userRoute.post('/signup', User_Controller.Register) 
 userRoute.post('/login', User_Controller.Login)
 // Profile routes
 userRoute.get('/user', Secure, User_Controller.UserProfile)
