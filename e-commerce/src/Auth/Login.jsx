@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useContext, useState } from 'react';
 import { AuthContext, useAuth } from '../Context/AuthContext';
 import { useNavigate, NavLink } from 'react-router-dom'
+import Loading from '../Components/Loading';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,8 +15,9 @@ export default function Login() {
     const handleLogin = async () => {
         try {
            var res= await axios.post('http://localhost:4000/api/login', { email, password }, { withCredentials: true });
+           if(loading) return <Loading/>
            if(res.status === 200) {
-            fetchUser();
+                fetchUser();
            }
            alert(res.data.message);
         } catch (error) {

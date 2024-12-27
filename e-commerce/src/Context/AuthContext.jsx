@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, NavLink } from 'react-router-dom'
-
+import { useNavigate } from 'react-router-dom';
+import Loading from '../Components/Loading'
 // Create context
 export const AuthContext = createContext();
 
@@ -15,36 +15,71 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  // Function to fetch user data once after login
+  // Function to fetch user data
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/user`, { withCredentials: true });
+      const response = await axios.get(`${apiUrl}/user`, { withCredentials: true });
+      // Check if user is authenticated
+      {
+        loading && <Loading/>
+      }
+      
       setUser(response.data);
-      console.log(user.role)
+
+      // Navigate based on role
+      switch (response.data.role) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'vendor':
+          navigate('/vendor');
+          break;
+        default:
+          navigate('/');
+      }
     } catch (error) {
-      console.error("Failed to fetch user data", error);
+      console.error('Failed to fetch user data', error);
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
+  // Logout function
+  const logout = async () => {
     try {
-      axios.post('http://localhost:4000/api/logout', {}, { withCredentials: true });
+      const res = await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
       setUser(null);
-      alert('Logged out successfully');
+      // Replace alert with a toast notification for better UX
+      console.log(res.data.message); // For debug or integrate toast
       navigate('/login');
-
     } catch (error) {
-      console.error("Failed to logout", error);
+      console.error('Failed to logout', error);
     }
-  }
+  };
 
-  // Call fetchUser only once after login
+  // Call fetchUser only once after component mounts
   useEffect(() => {
-    fetchUser();
-  }, []);
+    const abortController = new AbortController();
+    const fetchData = async () => {
+      try {
+        await fetchUser();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      abortController.abort(); // Cleanup to avoid memory leaks
+    };
+  }, [apiUrl]);
+
+  // Loading state management
+  if (loading) {
+    return <div>Loading...</div>; // Replace with spinner or skeleton loader
+  }
 
   const value = { user, loading, logout, fetchUser };
 

@@ -31,37 +31,46 @@ const Register = async (req, res) => {
 }
  
 const Login = async (req, res) => {
-    const { email, password } = req.body;
-    console.log(email, password);
-    const user = await userDB.findOne({ email });
+    try {
+        const { email, password } = req.body;
+        console.log(email, password);
 
-    if (!user) {
-        return res.status(401).send({ message: 'User does not exist' });
-    } else if (user.status == 'inActive') {
-        return res.status(400).json({ message: "Your Account is Not Active" })
-    }   
+        // Find user with indexed query
+        const user = await userDB.findOne({ email }).exec(); // .exec() for better query optimization
 
+        if (!user) {
+            return res.status(401).send({ message: 'User does not exist' });
+        }
+        if (user.status === 'inActive') {
+            return res.status(400).json({ message: "Your Account is Not Active" });
+        }
 
-    if (user) {
+        // Compare password
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             return res.status(400).json({ message: 'Invalid password' });
         }
+
         // Generate JWT
-        const token = JWT.sign({ userId: user._id }, process.env.JWT_SECRET);
-        // Store token in httpOnly cookie 
+        const token = JWT.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '14d', // Optional: Set token expiration
+        });
+
+        // Store token in httpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true, // make sure you're using HTTPS in production
-            maxAge: 14 * 24 * 60 * 60 * 1000, // 2 weeks in milliseconds
+            secure: process.env.NODE_ENV === 'production', // HTTPS in production
+            maxAge: 14 * 24 * 60 * 60 * 1000, // 2 weeks
         });
 
         // Send success response
-        res.status(200).json({ message: "Login successful", token });
-    } else {
-        res.status(401).json({ message: "Invalid credentials" });
+        return res.status(200).json({ message: "Login successful", token });
+    } catch (error) {
+        console.error("Login Error:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
 const UserProfile = async (req, res) => {
     try {
         const user = await userDB.findById(req.user.userId).select('-password'); // Exclude password from response
@@ -92,6 +101,11 @@ const updateProfile = async (req, res) => {
         res.status(500).json({ message: "Failed to update user profile" });
     }
 
+}
+
+const Logout=async (req, res) => {
+    res.clearCookie('token');
+    res.status(200).json({ message: 'Logged out successfully' });
 }
 
 
@@ -311,6 +325,7 @@ const getProductBySearch = async (req, res) => {
 module.exports = {
     Register,
     Login,
+    Logout,
     UserProfile,
     updateProfile,
     addReview,
