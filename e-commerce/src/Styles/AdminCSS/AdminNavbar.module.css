@@ -1,0 +1,145 @@
+/* In your App.css or a separate CSS file */
+.navbar-dark {
+  background-color: black !important; /* Black background */
+}
+
+.navbar-dark .navbar-brand {
+  color: yellow !important; /* Yellow color for brand */
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: yellow !important; /* Yellow color for nav links */
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: gray !important; /* Hover effect */
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+  color: gray !important; /* Active link color */
+}
+
+.navbar-dark .navbar-nav .nav-dropdown-item {
+  color: gray !important; /* Gray color for dropdown items */
+}
+
+.navbar-dark .navbar-nav .nav-dropdown-item:hover {
+  background-color: yellow !important;
+  color: rgb(112, 104, 104) !important; /* Yellow background on hover in dropdown */
+}
+
+
+/* AdminNavbar.module.css */
+
+/* General Styles */
+.navbar {
+  background-color: rgb(62, 64, 75) !important; /* Black background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  transition: all 0.3s ease;
+}
+
+.navbar:hover {
+  transform: translateY(-5px); /* Subtle lift effect when hovered */
+}
+
+.navbar-brand {
+  color: yellow !important;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: #f0e200 !important; /* Slightly different yellow on hover */
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+}
+
+/* Navbar Links */
+.nav-link {
+  color: yellow !important;
+  margin-left: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+  color: gray !important;
+  transform: scale(1.05);
+}
+
+/* Dropdown Button */
+.nav-dropdown-item {
+  color: gray !important;
+  font-size: 14px;
+  font-weight: 400;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-dropdown-item:hover {
+  background-color: yellow !important;
+  color: black !important;
+  transform: translateX(10px);
+}
+
+.navbar-toggler {
+  border-color: yellow !important; /* Yellow color for the hamburger icon */
+}
+
+/* Dropdown Animation */
+.navbar-nav .dropdown-menu {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.navbar-nav .nav-item:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown-menu {
+  background-color: black !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .nav-link {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .navbar-toggler {
+    background-color: yellow !important; /* Hamburger background color */
+  }
+
+  .navbar-toggler-icon {
+    background-color: black !important; /* Hamburger icon color */
+  }
+}
+
+/* Animation for Navbar Items */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.navbar-nav .nav-link {
+  animation: slideIn 0.5s ease-out;
+}

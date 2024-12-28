@@ -1,0 +1,73 @@
+/* UserPage.module.css */
+
+/* General Container */
+.userContainer {
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  /* Card Styles */
+  .card {
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Title and Subtitles */
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  /* Search Input */
+  .input-group {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  /* Table Styles */
+  table {
+    width: 100%;
+  }
+  
+  td, th {
+    padding: 12px;
+    text-align: left;
+  }
+  
+  thead {
+    background-color: #f1f1f1;
+  }
+  
+  tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Pagination Styles */
+  .pagination {
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  /* Button Styles */
+  button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .card-title {
+      font-size: 1.2rem;
+    }
+  
+    table {
+      font-size: 0.9rem;
+    }
+  
+    .input-group {
+      max-width: 100%;
+    }
+  }
+  

@@ -1,0 +1,101 @@
+/* Dashboard.module.css */
+
+/* Container */
+.dashboardContainer {
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  /* Card Styles */
+  .card {
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .cardTitle {
+    font-weight: bold;
+  }
+  
+  /* Card Icon */
+  .cardIcon {
+    font-size: 2.5rem;
+    color: #f0e200; /* Yellow */
+    margin-bottom: 15px;
+  }
+  
+  .cardText {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  /* Chart Section */
+  .chartContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .chartIcon {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 10px;
+  }
+  
+  .activityList {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1rem;
+  }
+  
+  .activityList li {
+    margin-bottom: 10px;
+  }
+  
+  /* Table Styling */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .table th {
+    background-color: #343a40;
+    color: white;
+  }
+  
+  .table td {
+    background-color: white;
+  }
+  
+  .table button {
+    border-radius: 20px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 20px;
+    }
+  
+    .table td, .table th {
+      font-size: 0.85rem;
+    }
+  
+    .chartContainer {
+      padding: 20px;
+    }
+  }
+  

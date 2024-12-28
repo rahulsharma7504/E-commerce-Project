@@ -1,0 +1,38 @@
+/* AdminSettings.module.css */
+
+.settingsContainer {
+    padding: 20px;
+    color: #fff;
+  }
+  
+  .card {
+    color: white;
+    background-color: #333;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .card-title {
+    color: yellow;
+    font-weight: bold;
+  }
+  
+  .navLink {
+    color: #fff !important;
+    font-size: 1.1rem;
+  }
+  
+  .navLink:hover {
+    color: yellow !important;
+  }
+  
+  button {
+    background-color: yellow;
+    color: #333;
+  }
+  
+  button:hover {
+    background-color: #ffd700;
+    color: black;
+  }
+  

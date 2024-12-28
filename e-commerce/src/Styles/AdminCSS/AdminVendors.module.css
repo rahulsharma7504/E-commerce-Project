@@ -1,0 +1,47 @@
+/* AdminVendors.module.css */
+
+.vendorsContainer {
+    color: #fff;
+    padding: 20px;
+  }
+  
+  .card {
+    /* background-color: #333; */
+    border-radius: 8px;
+  }
+  
+  .card-title {
+    color: yellow;
+    font-weight: bold;
+  }
+  
+  button {
+    background-color: yellow;
+    color: #333;
+    border: none;
+    margin-right: 5px;
+  }
+  
+  button:hover {
+    background-color: #ffd700;
+    color: black;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  
+  .modal-content {
+    background-color: #333;
+    color: white;
+  }
+  
+  .table thead {
+    background-color: #444;
+    color: yellow;
+  }
+  
+  .table-striped tbody tr:nth-child(odd) {
+    background-color: #555;
+  }
+  

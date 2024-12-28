@@ -4,6 +4,7 @@ import AdminNavbar from '../Components/Navbars/AdminNavbar';
 import VendorNavbar from '../Components/Navbars/VendorNavbar';
 import UserNavbar from '../Components/Navbars/UserNavbar';
 import Footer from '../Components/Footer/Footer';
+import AdminFooter from '../Components/Footer/AdminFooter';
 const Layout = ({ children }) => {
   const { user } = useAuth(); // Use the user context
   
@@ -25,7 +26,10 @@ const Layout = ({ children }) => {
       </header>
       {children}
       {/* Footer */}
-       <Footer/>
+      {
+        user?.role === 'admin' ? <AdminFooter />: <Footer />  // Render the appropriate footer based on user role
+      }
+
     </>
   );
 };

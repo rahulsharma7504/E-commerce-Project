@@ -1,0 +1,60 @@
+/* RevenuePage.module.css */
+
+/* General Container */
+.revenueContainer {
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  /* Card Styles */
+  .card {
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Title and Subtitles */
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  /* Overview Stats */
+  .card-body h3 {
+    font-size: 2rem;
+    color: #28a745;
+    margin-bottom: 10px;
+  }
+  
+  .card-body p {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+  
+  /* Date Range */
+  .input-group {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  /* Chart Styles */
+  .card-body canvas {
+    width: 100%;
+    height: 300px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .card-title {
+      font-size: 1.2rem;
+    }
+  
+    .card-body h3 {
+      font-size: 1.6rem;
+    }
+  
+    .input-group {
+      max-width: 100%;
+    }
+  }
+  

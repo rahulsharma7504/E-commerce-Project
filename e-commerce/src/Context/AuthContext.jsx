@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Loading from '../Components/Loading'
+import Loading from '../Components/Loading/Loading'
+import toast from 'react-hot-toast';
 // Create context
 export const AuthContext = createContext();
 
@@ -50,8 +51,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
       setUser(null);
+      toast.success('Logged out successfully'); // For debug or integrate toast
       // Replace alert with a toast notification for better UX
-      console.log(res.data.message); // For debug or integrate toast
       navigate('/login');
     } catch (error) {
       console.error('Failed to logout', error);

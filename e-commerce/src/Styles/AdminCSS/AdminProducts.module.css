@@ -1,0 +1,75 @@
+/* ProductsPage.module.css */
+
+/* General Container */
+.productsContainer {
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  /* Card Styles */
+  .card {
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Table Styling */
+  .table th, .table td {
+    text-align: center;
+    padding: 15px;
+  }
+  
+  .table th {
+    background-color: #343a40;
+    color: white;
+  }
+  
+  .table td {
+    background-color: white;
+  }
+  
+  .table button {
+    border-radius: 20px;
+  }
+  
+  /* Add Product Button */
+  button.mb-3 {
+    margin-top: 15px;
+    border-radius: 25px;
+  }
+  
+  /* Filter Section */
+  .input-group {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .dropdown-toggle {
+    width: 100%;
+  }
+  
+  /* Modal Styles */
+  .modal-header {
+    background-color: #343a40;
+    color: white;
+  }
+  
+  .modal-footer {
+    background-color: #f1f1f1;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .table th, .table td {
+      font-size: 0.85rem;
+    }
+  
+    .input-group, .dropdown-toggle {
+      width: 100%;
+    }
+  
+    .card-title {
+      font-size: 1.2rem;
+    }
+  }
+  

@@ -1,0 +1,39 @@
+/* LoadingPage.module.css */
+
+.loadingContainer {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .spinnerWrapper {
+    text-align: center;
+  }
+  
+  .spinner-border {
+    margin-bottom: 20px;
+  }
+  
+  .loadingText {
+    font-size: 1.2rem;
+    color: #343a40;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .alert-warning {
+    background-color: #f8d7da;
+    color: #856404;
+    border-color: #f5c6cb;
+    display: flex;
+    align-items: center;
+  }
+  
+  .alert-warning .fa-cog {
+    font-size: 1.5rem;
+    margin-right: 10px;
+  }
+  

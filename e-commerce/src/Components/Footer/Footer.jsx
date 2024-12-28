@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa'
+import { FaAngleDoubleUp, FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa'
 
 const Footer = () => {
   return (
@@ -62,7 +62,7 @@ const Footer = () => {
         <div className="row border-top mx-xl-5 py-4" style={{borderColor: "rgba(256, 256, 256, .1);"}}>
           <div className="col-md-6 px-xl-0">
             <p className="mb-md-0 text-center text-md-left text-secondary">
-              &copy; <a className="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
+              &copy; <a c="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
               by
               <a className="text-primary" href="https://htmlcodex.com">HTML Codex</a>
               <br/>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
@@ -73,6 +73,9 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+    <a href="#" class="btn btn-primary back-to-top"><FaAngleDoubleUp/> </a>
+
 
     </>
   )
