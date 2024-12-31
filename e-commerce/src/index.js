@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import 'font-awesome/css/font-awesome.min.css';
 // index.js ya App.js
+
 import './Assets/css/style.css';
 // import './Assets/css/bootstrap.css';
 import './Assets/lib/animate/animate.min.css';

@@ -1,0 +1,97 @@
+/* Container Styles */
+.dashboardContainer {
+    margin-top: 80px; /* Adjust for fixed navbar */
+    padding: 20px;
+  }
+  
+  /* Card Styles */
+  .statCard {
+    background-color: #f8f9fa;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .cardColumn {
+    margin-bottom: 20px;
+  }
+  
+  .cardIcon {
+    font-size: 30px;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+  
+  .cardTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .cardText {
+    font-size: 1.2rem;
+  }
+  
+  /* Graph Card */
+  .graphCard {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .graphPlaceholder {
+    background-color: #f8f9fa;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #6c757d;
+    border-radius: 8px;
+  }
+  
+  /* Orders Card */
+  .ordersCard {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ordersCard table {
+    width: 100%;
+  }
+  
+  .ordersCard th,
+  .ordersCard td {
+    text-align: center;
+    padding: 12px;
+    font-size: 1.1rem;
+  }
+  
+  /* Button Styles */
+  .viewAllButton {
+    width: 50%;
+    margin-top: 20px;
+    border-radius: 50px;
+    padding: 12px;
+    font-size: 1.2rem;
+  }
+  
+  .viewAllButton:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 767px) {
+    .cardColumn {
+      margin-bottom: 10px;
+    }
+  
+    .viewAllButton {
+      width: 80%;
+    }
+  }
+  

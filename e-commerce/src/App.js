@@ -16,7 +16,9 @@ import GoogleFonts from 'react-google-fonts';
 import Contact from './Pages/User/Contact/Contact';
 import Checkout from './Pages/User/Checkout/Checkout';
 import ShopDetail from './Pages/User/Shop-Detail/ShopDetail';
+
 //ADMIN SIDE CONTENT
+
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import AdminOrders from './Pages/Admin/AdminOrders';
 import AdminProducts from './Pages/Admin/AdminProducts';
@@ -26,6 +28,16 @@ import AdminSettings from './Pages/Admin/AdminSettings';
 import AdminUsers from './Pages/Admin/AdminUsers';
 import AdminVendors from './Pages/Admin/AdminVendors';
 import AdminCategory from './Pages/Admin/AdminCategory';
+
+
+// Vendor Side Files
+
+
+import VendorOrders from './Pages/Vendor/VendorOrders';
+import VendorSales from './Pages/Vendor/VendorSales';
+import V_Product_Manage from './Pages/Vendor/V_Product_Manage';
+import V_Order_Manage from './Pages/Vendor/V_Order_Manage';
+
 
 
 function App() {
@@ -54,6 +66,10 @@ function App() {
               
               {/* Vendor Routes */}
               <Route exact path="/vendor" element={<RoleBasedRoute allowedRoles={["vendor"]}><VendorDashboard /></RoleBasedRoute>} />
+              <Route exact path="/vendor-orders" element={<RoleBasedRoute allowedRoles={["vendor"]}><VendorOrders /></RoleBasedRoute>} />
+              <Route exact path="/vendor-sales" element={<RoleBasedRoute allowedRoles={["vendor"]}><VendorSales /></RoleBasedRoute>} />
+              <Route exact path="/vendor-products" element={<RoleBasedRoute allowedRoles={["vendor"]}><V_Product_Manage /></RoleBasedRoute>} />
+              <Route exact path="/vendor-orders-manage" element={<RoleBasedRoute allowedRoles={["vendor"]}><V_Order_Manage /></RoleBasedRoute>} />
               
 
               {/* User Routes */}

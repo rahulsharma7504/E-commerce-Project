@@ -1,0 +1,162 @@
+.productsPage {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .addButton {
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    margin: 1rem 0;
+    cursor: pointer;
+    display: block;
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: background-color 0.3s;
+  }
+  
+  .addButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .tableContainer {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .productsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .productsTable th,
+  .productsTable td {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  .productsTable th {
+    background-color: #f1f1f1;
+    color: #333;
+  }
+  
+  .productsTable tbody tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .editButton, .deleteButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin: 0 0.5rem;
+    font-size: 1.5rem;
+  }
+  
+  .editButton:hover {
+    color: #28a745;
+  }
+  
+  .deleteButton:hover {
+    color: #dc3545;
+  }
+  
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
+  }
+  
+  .modal h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .inputGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .inputGroup label {
+    display: block;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .inputGroup input,
+  .inputGroup textarea {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .inputGroup textarea {
+    height: 100px;
+  }
+  
+  .modalActions {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  
+  .saveButton,
+  .cancelButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .saveButton {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .saveButton:hover {
+    background-color: #218838;
+  }
+  
+  .cancelButton {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .cancelButton:hover {
+    background-color: #c82333;
+  }
+  

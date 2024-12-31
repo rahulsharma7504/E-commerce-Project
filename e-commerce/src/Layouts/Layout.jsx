@@ -26,9 +26,9 @@ const Layout = ({ children }) => {
       </header>
       {children}
       {/* Footer */}
-      {
+      {/* {
         user?.role === 'admin' ? <AdminFooter />: <Footer />  // Render the appropriate footer based on user role
-      }
+      } */}
 
     </>
   );

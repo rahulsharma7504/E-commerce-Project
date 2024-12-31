@@ -51,9 +51,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
       setUser(null);
+      if(res.status === 200) {
       toast.success('Logged out successfully'); // For debug or integrate toast
       // Replace alert with a toast notification for better UX
       navigate('/login');
+      }
     } catch (error) {
       console.error('Failed to logout', error);
     }
