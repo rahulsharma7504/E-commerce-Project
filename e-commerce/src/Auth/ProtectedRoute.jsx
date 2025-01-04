@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 const RoleBasedRoute = ({ children, allowedRoles }) => {
-  const { user } = useAuth();
+  const user=JSON.parse(localStorage.getItem("user"));
 
   if (!user || user === null) {
     return <Navigate to="/login" replace />;

@@ -9,7 +9,7 @@ const User_Controller = require('../Controllers/User_Controller')
 userRoute.post('/signup', User_Controller.Register) 
 userRoute.post('/login', User_Controller.Login)
 userRoute.post('/logout', User_Controller.Logout)
-// Profile routes
+// Profile routes 
 userRoute.get('/user', Secure, User_Controller.UserProfile)
 userRoute.put('/update-profile', Secure, User_Controller.updateProfile)
 // User Reviews and Feedbacks

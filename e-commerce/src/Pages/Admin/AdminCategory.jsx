@@ -1,40 +1,47 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Modal, Form, InputGroup, FormControl } from 'react-bootstrap';
-import { FaSearch, FaPlus, FaEdit, FaTrash, FaFilter } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Table, Button, Modal, Form, FormControl, InputGroup } from 'react-bootstrap';
+import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import styles from '../../Styles/AdminCSS/AdminCategory.module.css'; // Import the CSS module
+import { useCategory } from '../../Context/AdminContext/CategoryManageContext';
 
 const CategoryManagementPage = () => {
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Electronics' },
-    { id: 2, name: 'Home Appliances' },
-    { id: 3, name: 'Clothing' },
-    { id: 4, name: 'Sports & Outdoors' },
-    // More sample categories
-  ]);
+  const { categories, setCategories, createCategory, updateCategory, deleteCategory } = useCategory();
   
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newCategory, setNewCategory] = useState('');
-  const [filteredCategory, setFilteredCategory] = useState('');
+  // State variables
+  const [showModal, setShowModal] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
+  const [categoryId, setCategoryId] = useState(null);  // Used for Edit
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Function to add a new category
-  const handleAddCategory = () => {
-    setCategories([...categories, { id: categories.length + 1, name: newCategory }]);
-    setShowAddModal(false);
-    setNewCategory('');
+  // Function to add or update category
+  const handleCategorySubmit = () => {
+    if (categoryId) {
+      updateCategory(categoryId, categoryName);
+    } else {
+      createCategory(categoryName);
+    }
+
+    // Reset the form and close the modal
+    setCategoryName('');
+    setCategoryId(null);
+    setShowModal(false);
   };
 
   // Filter categories based on search term
   const filterCategories = () => {
     if (searchTerm) {
-      return categories.filter(category => category.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      return categories.filter((category) =>
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
     return categories;
   };
 
-  // Function to delete a category
-  const handleDeleteCategory = (id) => {
-    setCategories(categories.filter(category => category.id !== id));
+  // Open modal in edit mode
+  const handleEditCategory = (category) => {
+    setCategoryId(category._id);
+    setCategoryName(category.name);
+    setShowModal(true);
   };
 
   return (
@@ -54,7 +61,7 @@ const CategoryManagementPage = () => {
           </InputGroup>
         </Col>
         <Col md={6} sm={12} className="mb-3">
-          <Button variant="success" onClick={() => setShowAddModal(true)} className="mb-3">
+          <Button variant="success" onClick={() => setShowModal(true)} className="mb-3">
             <FaPlus /> Add Category
           </Button>
         </Col>
@@ -75,15 +82,15 @@ const CategoryManagementPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filterCategories().map(category => (
+                  {filterCategories().map((category) => (
                     <tr key={category.id}>
-                      <td>{category.id}</td>
-                      <td>{category.name}</td>
+                      <td>{category?._id.length}</td>
+                      <td>{category?.name}</td>
                       <td>
-                        <Button variant="primary" className="me-2">
+                        <Button variant="primary" className="me-2" onClick={() => handleEditCategory(category)}>
                           <FaEdit /> Edit
                         </Button>
-                        <Button variant="danger" onClick={() => handleDeleteCategory(category.id)}>
+                        <Button variant="danger" onClick={() => deleteCategory(category._id)}>
                           <FaTrash /> Delete
                         </Button>
                       </td>
@@ -96,10 +103,10 @@ const CategoryManagementPage = () => {
         </Col>
       </Row>
 
-      {/* Add Category Modal */}
-      <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+      {/* Add/Edit Category Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Category</Modal.Title>
+          <Modal.Title>{categoryId ? 'Edit Category' : 'Add New Category'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -108,18 +115,18 @@ const CategoryManagementPage = () => {
               <Form.Control
                 type="text"
                 placeholder="Enter category name"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleAddCategory}>
-            Add Category
+          <Button variant="primary" onClick={handleCategorySubmit}>
+            {categoryId ? 'Update Category' : 'Add Category'}
           </Button>
         </Modal.Footer>
       </Modal>

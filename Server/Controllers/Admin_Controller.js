@@ -4,44 +4,24 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const CategoryModel = require('../Models/categoryModel');
 
-const createVendor = async (req, res) => {
-    try {
-        const { name, email, password, phone, storeName, role } = req.body;
-        const findVendor = await userDB.find({ email });
-        if (findVendor) return res.status(200).send({ message: 'Anyone Already Register from this ' + email + ' Mail ID' })
-        const hashPassword = await bcrypt.hash(password, 15);
-        const createUser = await userDB({
-            name,
-            email,
-            password: hashPassword,
-            phone,
-            role
-        });
-        const USER = await createUser.save();
-        const createVendor = await vendorDB({
-            user: USER._id,
-            storeName
-        });
-        await createVendor.save();
-        res.status(201).json({ message: "Vendor has been Created Successfully!", Data: createVendor });
 
 
-    } catch (error) {
-        if (error) throw error.message
-        res.status(400).send({ message: 'Something Went Wronge' })
 
-    }
-}
+
+// User Management API
 
 const getAllUsers = async (req, res) => {
     try {
-        const allUsers = await userDB.find({ role: { $nin: ['admin'] } });
+        const allUsers = await userDB.find({ role: 'user' })
+            .limit(10)
+            .select('-password');
+
 
         if (!allUsers || allUsers.length === 0) {
             return res.status(404).send({ message: "No users found" });
         }
 
-        res.status(200).send({ message: "All Users", data: allUsers });
+        res.status(200).json(allUsers);
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Something went wrong', error: error.message });
@@ -50,14 +30,14 @@ const getAllUsers = async (req, res) => {
 
 
 
-const Status = async (req, res) => {
+const UpdateUserStatus = async (req, res) => {
     try {
-        const { id, status } = req.body;
-        if (!id || !status) {
+        const { userId, status } = req.body;
+        if (!userId || !status) {
             return res.status(400).json({ message: "ID and status are required" });
         }
 
-        const findUser = await userDB.findOne({ _id: id });
+        const findUser = await userDB.findOne({ _id: userId });
 
         if (!findUser) {
             return res.status(404).json({ message: "User not found" });
@@ -68,22 +48,102 @@ const Status = async (req, res) => {
         // Save the updated user document
         const updatedUser = await findUser.save();
 
-        res.status(200).json({ message: "Status Updated", data: updatedUser.toObject() });
+        res.status(200).json({ message: "Status Updated" });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Something went wrong', error: error.message });
     }
 };
 
-const updateUserOrVendorDetails = async (req, res) => {
-    try {
-        const { adminId, userId, updatedData } = req.body;
 
-        const adminUser = await userDB.findById(adminId);
-        if (!adminUser || adminUser.role !== 'admin') {
-            return res.status(403).json({ message: "You do not have permission to update user or vendor details" });
+
+
+
+
+
+// Vendor Management API
+
+const createVendor = async (req, res) => {
+    try {
+        // Destructure vendor data from request body
+        const { name, email, password, phone, storeName, role = 'vendor' } = req.body.vendorData;
+
+        // Check if all required fields are provided
+        if (!name || !email || !password || !phone || !storeName) {
+            return res.status(400).json({ message: 'All fields are required' });
         }
 
+        // Check if vendor with the same email already exists
+        const findVendor = await userDB.find({ email });
+        if (findVendor.length > 0) {
+            return res.status(400).send({ message: `A user is already registered with this email ID: ${email}` });
+        }
+
+        // Hash the password before saving it to the database
+        const hashPassword = await bcrypt.hash(password, 15);
+
+        // Create a new user in the userDB
+        const createUser = new userDB({
+            name,
+            email,
+            password: hashPassword,
+            phone,
+            role
+        });
+
+        // Save the user
+        const USER = await createUser.save();
+
+        // Create the vendor entry in the vendorDB
+        const createVendor = new vendorDB({
+            user: USER._id,
+            storeName
+        });
+
+        // Save the vendor
+        await createVendor.save();
+
+        // Send success response
+        res.status(201).json({ message: "Vendor has been created successfully!" });
+
+    } catch (error) {
+        // Properly handle errors and return a message
+        console.error(error);
+        res.status(500).send({ message: 'Something went wrong. Please try again later.' });
+    }
+};
+
+
+const getAllVendors = async (req, res) => {
+    try {
+        const allVendors = await vendorDB.find()
+            .limit(10)
+            .populate('user'); // Use 'user' instead of 'User' here
+
+        if (!allVendors || allVendors.length === 0) {
+            return res.status(404).send({ message: "No vendors found" });
+        }
+
+        res.status(200).json(allVendors);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Something went wrong', error: error.message });
+    }
+};
+
+
+const updateUserOrVendorDetails = async (req, res) => {
+    try {
+        const {  userId, updatedData } = req.body;
+
+       
+        const VendorData={
+            name: updatedData.name || userToUpdate.name,
+            email: updatedData.email || userToUpdate.email,
+            phone: updatedData.phone || userToUpdate.phone,
+            role: updatedData.role || userToUpdate.role,
+            storeName: updatedData.storeName || vendorDetails.storeName,
+        }
         const userToUpdate = await userDB.findById(userId);
         if (!userToUpdate) {
             return res.status(404).json({ message: "User not found" });
@@ -95,8 +155,8 @@ const updateUserOrVendorDetails = async (req, res) => {
                 return res.status(404).json({ message: "Vendor details not found" });
             }
 
-            Object.assign(vendorDetails, updatedData);
-            Object.assign(userToUpdate, updatedData)
+            Object.assign(vendorDetails, VendorData);
+            Object.assign(userToUpdate, VendorData)    
 
             await vendorDetails.save();
             await userToUpdate.save();
@@ -126,12 +186,22 @@ const updateUserOrVendorDetails = async (req, res) => {
     }
 }
 
-
-const DeleteAny = async (req, res) => {
+const deleteVendor = async (req, res) => {
     try {
-        const { id } = req.body;
-        const DeleteAny = await userDB.findByIdAndDelete({ _id: id });
-        res.status(200).json({ message: 'Action Completed', data: DeleteAny })
+        const { userId } = req.params;
+        const userToDelete = await userDB.findById(userId);
+        if (!userToDelete) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (userToDelete.role === 'vendor') {
+            const vendorDetails = await vendorDB.findOneAndDelete({ user: userId });
+            const deletedUser = await userDB.findByIdAndDelete(userId);
+            if (!vendorDetails) {
+                return res.status(404).json({ message: "Vendor details not found" });
+            }
+        }
+        res.status(200).json({ message: "Vendor deleted successfully" });
+        
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Something went wrong', error: error.message });
@@ -140,11 +210,12 @@ const DeleteAny = async (req, res) => {
 
 
 
+
 // Categorizes APIs and returns  them
 const getAllCategories = async (req, res) => {
     try {
         const allCategory = await CategoryModel.find();
-        res.status(200).json({ message: "All Category", Category: allCategory });
+        res.status(200).json(allCategory);
     } catch (error) {
         console.error(error); // Log the error for debugging
         res.status(500).json({ error: "Internal Server Error" });
@@ -154,16 +225,16 @@ const getAllCategories = async (req, res) => {
 // Create categories
 const createCategory = async (req, res) => {
     try {
-        const { name } = req.body;
-        const findexistCategory = await CategoryModel.findOne({ name: name });
+        const { category } = req.body;
+        const findexistCategory = await CategoryModel.findOne({ name: category.toLowerCase() });
         if (findexistCategory) {
-            return res.status(401).send({ message: "Category Already Exist" });
+            return res.status(400).json({ message: "Category Already Exist" });
         }
 
-        const category = await new CategoryModel({
-            name: name.toLowerCase(), // Assuming you're using a predefined category name for now
+        const createCategory = await new CategoryModel({
+            name: category.toLowerCase(), // Assuming you're using a predefined category name for now
         }).save();
-        return res.status(200).json({ message: "Category Created", Category: category });
+        return res.status(201).json({ message: "Category Created"});
     } catch (error) {
         if (error) throw error;
         return res.status(500).json({ error: "Internal Server Error" });
@@ -174,10 +245,9 @@ const createCategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
     try {
-        const { name } = req.body;
-        const { id } = req.params;
-        const updateCat = await CategoryModel.findByIdAndUpdate({ _id: id }, { $set: { name: name } }, { new: true });
-        return res.status(200).json({ message: "Category Updated", Category: updateCat });
+        const { categoryName,categoryId } = req.body;
+        const updateCat = await CategoryModel.findByIdAndUpdate({ _id: categoryId }, { $set: { name: categoryName } }, { new: true });
+        return res.status(200).json({ message: "Category Updated"});
     } catch (error) {
         if (error) throw error;
         return res.status(500).json({ error: "Internal Server Error" });
@@ -186,27 +256,202 @@ const updateCategory = async (req, res) => {
 }
 
 // Delete Category
-const DeleteCategory=async(req,res)=>{
+const DeleteCategory = async (req, res) => {
     try {
-        
-        const {id}=req.params;
-        const deleteCategory=await CategoryModel.findByIdAndDelete({_id:id});
-        res.status(200).json({ message: "Category Deleted", Category: deleteCategory });
+
+        const { categoryId } = req.params;
+        const deleteCategory = await CategoryModel.findByIdAndDelete({ _id: categoryId });
+        res.status(200).json({ message: "Category Deleted"});
     } catch (error) {
         console.error(error); // Log the error for debugging
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+
+// Products Management API
+
+
+
+
+const createProduct = async (req, res) => {
+    const { name, description, price, stockQuantity, color, categoryName, vendorId } = req.body;
+
+    try {
+        const productImages = req.files.map(file => file.path);
+
+        // Check if the product already exists
+        const findexistProduct = await ProductModel.findOne({ name });
+        if (findexistProduct) {
+            return res.status(400).json({ error: "Product already exists" });
+        }
+
+        // Find the category by name
+        const category = await CategoryModel.findOne({ name: categoryName.toLowerCase() });
+        if (!category) {
+            return res.status(400).json({ error: "Category not found" });
+        }
+
+        // Upload images to Cloudinary
+        const uploadedImages = await Promise.all(
+            productImages.map((filePath, index) =>
+                cloudinary.uploader.upload(filePath)
+            )
+        );
+
+        // Extract secure URLs from uploaded images
+        const imageUrls = uploadedImages.map(image => image.secure_url);
+
+        // Create a new product
+        const product = new ProductModel({
+            name,
+            images: imageUrls, // Save all image URLs as an array
+            price,
+            stockQuantity,
+            color,
+            description,
+            category: category._id,
+            vendor: vendorId,
+        });
+
+        // Save the product to the database
+        await product.save();
+        const updateCategory = await CategoryModel.findOne({ name: categoryName.toLowerCase() });
+        // Add the new product's ID to the category's products array
+        updateCategory.products.push(product._id);
+        await updateCategory.save();
+
+        res.status(201).json({ message: "Product created successfully", product, updateCategory });
+    } catch (error) {
+        console.error("Error creating product:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+
+
+const AllProduct = async (req, res) => {
+    try {
+        // const allProduct = await ProductModel.find().populate('reviews');
+        const allProducts = await ProductModel.find().populate({
+            path: 'reviews',
+            select:'comment -_id',
+            populate: {
+                path: 'user', // Populating the 'user' field inside 'reviews'
+                select: 'name -_id' // Specify fields you want to fetch
+            }
+        });
+
+        res.status(200).json({ message: "All Product", Product: allProducts, totel: allProducts.length });
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const UpdateProduct = async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const { name, description, color, price, stockQuantity, categoryName, vendorId } = req.body;
+        console.warn(req.body)
+
+        var uploadedImages
+        // Check if req.file exists and set the image path accordingly
+        if (req.files) {
+            const productImages = req.files.map(file => file.path);
+            // Upload images to Cloudinary
+            uploadedImages = await Promise.all(
+                productImages.map((filePath, index) =>
+                    cloudinary.uploader.upload(filePath)
+                )
+            );
+        }
+        const imageUrls = uploadedImages.map(image => image.secure_url);
+
+        const category = await CategoryModel.findOne({ name: categoryName.toLowerCase() });
+        if (!category) {
+            return res.status(400).json({ error: "Category not found" });
+        }
+
+
+        const updateProduct = await ProductModel.findByIdAndUpdate(
+            { _id: productId }, // Filter criteria
+            {
+                $set: {
+                    name: name,
+                    price: price,
+                    color,
+                    description: description,
+                    category: category._id,
+                    image: imageUrls,
+                    stockQuantity: stockQuantity,
+                    vendor: vendorId,
+                }
+            }, // Update document
+            { new: true } // To     return the updated document
+        );
+        console.log(updateProduct)
+        // Product found, send it in the response
+        res.status(200).json({ message: "Update Product Success", product: updateProduct });
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+const DeleteProduct = async (req, res) => {
+    try {
+        const { productId } = req.params;
+
+        // Step 1: Find the product and populate its category
+        const singleProduct = await ProductModel.findById(productId).populate('category');
+
+        if (!singleProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        const categoryId = singleProduct.category._id;
+
+        // Step 2: Remove the product reference from the category's products array
+        const category = await CategoryModel.findById(categoryId);
+        if (category) {
+            category.products = category.products.filter(product => product.toString() !== productId);
+            await category.save();
+        }
+
+        // Step 3: Optionally delete all reviews associated with this product
+        // Assuming you want to delete the reviews too, if needed
+        await ReviewModel.deleteMany({ product: productId });
+
+        // Step 4: Delete the product
+        await ProductModel.findByIdAndDelete(productId);
+
+        // Step 5: Return a success message
+        res.status(200).json({ message: "Product and associated data deleted successfully" });
+
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+
+
 module.exports = {
     createVendor,
     getAllUsers,
-    Status,
     updateUserOrVendorDetails,
-    DeleteAny,
     getAllCategories,
     createCategory,
     updateCategory,
-    DeleteCategory
+    DeleteCategory,
+    UpdateUserStatus,
+    deleteVendor,
+    getAllVendors,
+    createProduct,
+    AllProduct,
+    UpdateProduct,
+    DeleteProduct,
 }
 
 

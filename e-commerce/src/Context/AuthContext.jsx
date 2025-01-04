@@ -12,20 +12,19 @@ export const useAuth = () => useContext(AuthContext);
 // Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
   // Function to fetch user data
   const fetchUser = async () => {
     try {
+      setLoading(true);
+
       const response = await axios.get(`${apiUrl}/user`, { withCredentials: true });
       // Check if user is authenticated
-      {
-        loading && <Loading/>
-      }
-      
       setUser(response.data);
+      localStorage.setItem('user',JSON.stringify(response.data));
 
       // Navigate based on role
       switch (response.data.role) {
@@ -46,6 +45,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  useEffect(()=>{
+    if(localStorage.getItem('user')) {
+      setUser(JSON.parse(localStorage.getItem('user')));
+    } else {
+      setUser(null);
+    }
+  },[]);
   // Logout function
   const logout = async () => {
     try {
@@ -61,29 +67,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Call fetchUser only once after component mounts
-  useEffect(() => {
-    const abortController = new AbortController();
-    const fetchData = async () => {
-      try {
-        await fetchUser();
-      } catch (err) {
-        console.error(err);
-      }
-    };
+ 
 
-    fetchData();
-
-    return () => {
-      abortController.abort(); // Cleanup to avoid memory leaks
-    };
-  }, [apiUrl]);
-
-  // Loading state management
-  if (loading) {
-    return <div>Loading...</div>; // Replace with spinner or skeleton loader
-  }
-
+ 
   const value = { user, loading, logout, fetchUser };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

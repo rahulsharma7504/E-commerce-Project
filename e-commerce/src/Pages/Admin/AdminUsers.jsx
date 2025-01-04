@@ -2,16 +2,12 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Table, Button, Form, InputGroup, FormControl, Pagination } from 'react-bootstrap';
 import { FaSearch, FaUserEdit, FaTrash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import styles from '../../Styles/AdminCSS/AdminUsers.module.css'; // Import the CSS module
+import { useUsers } from '../../Context/AdminContext/Management/UserManageContext';
+import moment from 'moment'
 
 const UserPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'johndoe@example.com', status: 'Active', registrationDate: '2023-08-12' },
-    { id: 2, name: 'Jane Smith', email: 'janesmith@example.com', status: 'Inactive', registrationDate: '2023-06-21' },
-    { id: 3, name: 'Robert Brown', email: 'robertb@example.com', status: 'Active', registrationDate: '2023-07-10' },
-    // Add more users for demonstration...
-  ]);
-  
+  const { users, setUsers, changeUserStatus, deleteUser } = useUsers();
   const [page, setPage] = useState(1);
   const usersPerPage = 5;
 
@@ -19,20 +15,7 @@ const UserPage = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleDeactivate = (userId) => {
-    // Implement deactivation logic here
-    setUsers(users.map(user => user.id === userId ? { ...user, status: 'Inactive' } : user));
-  };
 
-  const handleDelete = (userId) => {
-    // Implement delete logic here
-    setUsers(users.filter(user => user.id !== userId));
-  };
-
-  const handleEdit = (userId) => {
-    // Implement edit logic here
-    alert('Edit user: ' + userId);
-  };
 
   const filteredUsers = users.filter(user => {
     return user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -82,11 +65,11 @@ const UserPage = () => {
                 </thead>
                 <tbody>
                   {displayedUsers.map(user => (
-                    <tr key={user.id}>
+                    <tr key={user._id}>
                       <td>{user.name}</td>
                       <td>{user.email}</td>
                       <td>
-                        {user.status === 'Active' ? (
+                        {user.status === 'Active' || user.status=== 'active' ? (
                           <span className="text-success">
                             <FaCheckCircle /> Active
                           </span>
@@ -96,21 +79,19 @@ const UserPage = () => {
                           </span>
                         )}
                       </td>
-                      <td>{user.registrationDate}</td>
+                      <td>{moment(user.createdAt).format('DD-MM-YYYY')}</td>
                       <td>
-                        <Button variant="warning" onClick={() => handleEdit(user.id)} className="me-2">
-                          <FaUserEdit /> Edit
-                        </Button>
-                        <Button variant="danger" onClick={() => handleDelete(user.id)} className="me-2">
+
+                        <Button variant="danger" onClick={() => deleteUser(user._id)} className="me-2">
                           <FaTrash /> Delete
                         </Button>
-                        {user.status === 'Active' ? (
-                          <Button variant="secondary" onClick={() => handleDeactivate(user.id)}>
+                        {user.status === 'Active' || user.status==='active' ? (
+                          <Button variant="secondary" onClick={() => changeUserStatus(user._id, 'inactive')}>
                             Deactivate
                           </Button>
                         ) : (
-                          <Button variant="secondary" disabled>
-                            Deactivated
+                          <Button variant="secondary" onClick={() => changeUserStatus(user._id, 'active')}  >
+                            Activate
                           </Button>
                         )}
                       </td>

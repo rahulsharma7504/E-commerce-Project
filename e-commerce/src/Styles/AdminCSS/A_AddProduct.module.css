@@ -1,0 +1,47 @@
+/* A_AddProduct.module.css */
+
+/* Basic container padding and alignment */
+.container {
+  padding: 20px;
+}
+
+/* Form styling */
+.formRow {
+  margin-top: 20px;
+}
+
+.formCol {
+  padding: 15px;
+}
+
+/* Ensure the form input fields take up full width on mobile */
+@media (max-width: 767px) {
+  .formCol {
+    padding: 10px;
+  }
+
+  .formGroup {
+    margin-bottom: 15px;
+  }
+
+  .imagePreview {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .w-100 {
+    width: 100% !important;
+  }
+}
+
+/* Adjusting column layout for larger screens (6x6 grid) */
+@media (min-width: 768px) {
+  .formRow {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .formCol {
+    width: 50%; /* 6 columns on medium and larger screens */
+  }
+}

@@ -29,8 +29,8 @@ const UserNavbar = () => {
                 id="dropdown-custom-components"
                 title="My Account"
               >
-                <Dropdown.Item as="button">Sign in</Dropdown.Item>
-                <Dropdown.Item as="button">Sign up</Dropdown.Item>
+                <Dropdown.Item as="button" onClick={()=>navigate('/login')}>Sign in</Dropdown.Item>
+                <Dropdown.Item as="button" onClick={()=>navigate('/sign-up')}>Sign up</Dropdown.Item>
                 {user && <Dropdown.Item as="button" onClick={() => navigate('/shop/cart')}>Cart</Dropdown.Item>}
               </DropdownButton>
 

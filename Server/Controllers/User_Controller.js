@@ -8,9 +8,8 @@ const productModel = require('../Models/productModel');
 const Register = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
-        console.log(name, email, password, phone);
         const existingUser = await userDB.findOne({ email });
-        if (existingUser) return res.status(400).send({ message: 'User already exists' })
+        if (existingUser) return res.status(400).json({ message: 'User already exists' })
 
         // Hash Password
         const hashedPassword = await bcrypt.hash(password, 20);
@@ -22,10 +21,11 @@ const Register = async (req, res) => {
             phone
         });
         await user.save();
-        res.status(201).send({ message: 'User Registered Successfully' })
+        res.status(201).json({ message: 'User Registered Successfully' })
 
     } catch (error) {
         if (error) throw error.message
+        res.status(400).json({ message: 'Something Went Wronge' })
 
     }
 }
