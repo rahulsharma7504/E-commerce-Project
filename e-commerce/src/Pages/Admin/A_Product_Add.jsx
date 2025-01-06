@@ -4,8 +4,12 @@ import { FaPlus, FaRegEye } from 'react-icons/fa';
 import styles from '../../Styles/AdminCSS/A_AddProduct.module.css'; // Import the CSS module
 import { useCategory } from './../../Context/AdminContext/CategoryManageContext';
 import { useVendor } from './../../Context/AdminContext/Management/VendorManageContext';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useProduct } from '../../Context/AdminContext/Management/ProductsManageContext';
 const AddProductForm = () => {
     const { vendors } = useVendor();
+    const {createProduct}=useProduct()
     const { categories } = useCategory();
     // State to hold form data and images
     const [productName, setProductName] = useState('');
@@ -19,10 +23,19 @@ const AddProductForm = () => {
     const [showImagePreview, setShowImagePreview] = useState(false);
 
     // Sample dynamic data for categories and vendors (replace with actual API calls)
+    const colors = [
+        "Red", "Blue", "Green", "Yellow", "Orange", "Purple", "Pink", "Brown", "Black", "White",
+        "Gray", "Cyan", "Magenta", "Maroon", "Olive", "Teal", "Navy", "Lime", "Indigo", "Gold",
+        "Silver", "Beige", "Coral", "Turquoise", "Mint", "Violet", "Peach", "Crimson", "Lavender", "Aquamarine"
+    ];
+
 
 
     // Handle the form submission
-    const handleAddProduct = () => {
+    const handleAddProduct = async() => {
+        try {
+            
+       
         const newProduct = {
             name: productName,
             description,
@@ -34,7 +47,11 @@ const AddProductForm = () => {
             images,
         };
 
-        console.log('Product Added:', newProduct);
+
+       createProduct(newProduct)
+
+
+
         // Reset form after submission
         setProductName('');
         setDescription('');
@@ -45,6 +62,10 @@ const AddProductForm = () => {
         setVendorId('');
         setImages([]);
         setShowImagePreview(false);
+    } catch (error) {
+           
+            console.error(error.message)
+    }
     };
 
     // Handle image file selection
@@ -55,7 +76,7 @@ const AddProductForm = () => {
     };
 
     return (
-        <Container fluid className={styles.container}>
+        <Container fluid className={styles.container} mt={3}>
             <Row>
                 {/* Left Column */}
                 <Col xs={12} md={6}>
@@ -117,14 +138,20 @@ const AddProductForm = () => {
                 <Col xs={12} md={6} className='mt-3'>
                     <Row className='mt-5'>
                         <Col xs={12} md={6} className="mb-3">
-                            <Form.Group controlId="color">
-                                <Form.Label>Color</Form.Label>
+                            <Form.Group controlId="categoryName">
+                                <Form.Label>Color Name</Form.Label>
                                 <Form.Control
-                                    type="text"
-                                    placeholder="Enter product color"
+                                    as="select"
                                     value={color}
                                     onChange={(e) => setColor(e.target.value)}
-                                />
+                                >
+                                    <option value="">Select Color</option>
+                                    {colors.map((color, index) => (
+                                        <option key={index} value={color}>
+                                            {color}
+                                        </option>
+                                    ))}
+                                </Form.Control>
                             </Form.Group>
                         </Col>
 
@@ -200,7 +227,7 @@ const AddProductForm = () => {
                                 <div key={index} className="m-2">
                                     <img
                                         src={URL.createObjectURL(image)}
-                                        alt={`Product image ${index + 1}`}
+                                        alt={`Product image ${index + 1}`} width={250}
                                         className={styles.imagePreview}
                                     />
                                 </div>

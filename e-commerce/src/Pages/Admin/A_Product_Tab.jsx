@@ -3,10 +3,11 @@ import { Container, Row, Col, Card, Table, Button, Modal, Form, InputGroup, Form
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaFilter } from 'react-icons/fa';
 import styles from '../../Styles/AdminCSS/AdminProducts.module.css'; // Import the CSS module
 import { useProduct } from '../../Context/AdminContext/Management/ProductsManageContext';
+import { useCategory } from '../../Context/AdminContext/CategoryManageContext';
 
 const ProductsPage = () => {
-  const {products, setProducts, createProduct, getProducts, updateProduct, deleteProduct}=useProduct()
-  
+  const { products, setProducts, updateProduct, deleteProduct } = useProduct()
+  const { categories } = useCategory()
 
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false); // State for editing a product
@@ -16,18 +17,8 @@ const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Add new product
-  const handleAddProduct = () => {
-    setProducts([...products, { ...newProduct, id: products.length + 1 }]);
-    setShowModal(false);
-    setNewProduct({ name: '', category: '', price: '', stock: 'In Stock' });
-  };
 
-  // Edit product
-  const handleEditProduct = () => {
-    setProducts(products.map((product) => (product.id === editProduct.id ? editProduct : product)));
-    setShowEditModal(false);
-    setEditProduct({ id: '', name: '', category: '', price: '', stock: '' });
-  };
+
 
   // Filter products by category
   const filterProducts = () => {
@@ -67,9 +58,12 @@ const ProductsPage = () => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredCategory('Electronics')}>Electronics</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredCategory('Home Appliances')}>Home Appliances</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredCategory('')}>Clear Filter</Dropdown.Item>
+              {
+                categories && categories.map(category => (
+                  <Dropdown.Item key={category._id} onClick={() => setFilteredCategory(category.name)}>
+                    {category.name}
+                  </Dropdown.Item>
+                ))}
             </Dropdown.Menu>
           </Dropdown>
         </Col>
@@ -81,7 +75,7 @@ const ProductsPage = () => {
           <Card className={styles.card}>
             <Card.Body>
               <Card.Title>Products List</Card.Title>
-             
+
               <Table striped bordered hover responsive>
                 <thead>
                   <tr>
@@ -89,23 +83,23 @@ const ProductsPage = () => {
                     <th>Name</th>
                     <th>Category</th>
                     <th>Price</th>
-                    <th>Stock</th>
+                    <th>Color</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filterProducts().map(product => (
-                    <tr key={product.id}>
-                      <td>{product.id}</td>
+                    <tr key={product._id}>
+                      <td>{product._id.trim(3)}</td>
                       <td>{product.name}</td>
-                      <td>{product.category}</td>
+                      <td>{product?.category && (
+                        product.category.name
+                      )}</td>
                       <td>{product.price}</td>
-                      <td>{product.stock}</td>
+                      <td>{product.color}</td>
                       <td>
-                        <Button variant="primary" className="me-2" onClick={() => { setEditProduct(product); setShowEditModal(true); }}>
-                          <FaEdit /> Edit
-                        </Button>
-                        <Button variant="danger" onClick={() => setProducts(products.filter(p => p.id !== product.id))}>
+                       
+                        <Button variant="danger" onClick={() => deleteProduct(product._id)}>
                           <FaTrash /> Delete
                         </Button>
                       </td>
@@ -118,9 +112,9 @@ const ProductsPage = () => {
         </Col>
       </Row>
 
-   
 
-     
+
+
     </Container>
   );
 };

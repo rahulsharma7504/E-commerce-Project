@@ -46,5 +46,9 @@ adminRoutes.get('/product', Secure, isAdmin, Admin_Controller.AllProduct)
 adminRoutes.put('/product/:productId', Secure, isAdmin, uploadMultiple, Admin_Controller.UpdateProduct)
 adminRoutes.delete('/product/:productId', Secure, isAdmin, uploadMultiple, Admin_Controller.DeleteProduct)
 
+// Admin Update Profile API
+
+adminRoutes.put('/update-profile', Secure, isAdmin, Admin_Controller.updateProfile)
+
 
 module.exports = { adminRoutes }

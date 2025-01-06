@@ -1,18 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { FaUser, FaKey, FaBell, FaPalette, FaSave } from 'react-icons/fa';
 import styles from '../../Styles/AdminCSS/AdminSettings.module.css'; // Import the custom CSS file for styling
+import { useCategory } from '../../Context/AdminContext/CategoryManageContext';
 
 const AdminSettingsPage = () => {
+  const {adminSettings, loading}=useCategory(); // Fetch categories on page load
   const [formData, setFormData] = useState({
+    userId:null,
     name: 'Admin User',
     email: 'admin@example.com',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
-    enableNotifications: true,
-    theme: 'light',
   });
+
+  useEffect(()=>{
+    const savedData = JSON.parse(localStorage.getItem('user'));
+    if(savedData) {
+      setFormData({
+        userId: savedData._id,
+        name: savedData.name,
+        email: savedData.email,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      })
+    }
+  },[])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,20 +35,17 @@ const AdminSettingsPage = () => {
       ...prevData,
       [name]: value,
     }));
+
   };
 
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: checked,
-    }));
-  };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    adminSettings(formData); // Save user data to local storage (optional: implement server-side storage as well)
     // Handle form submission (e.g., API call)
-    console.log('Settings Updated:', formData);
+
   };
 
   return (
@@ -117,50 +129,7 @@ const AdminSettingsPage = () => {
         </Col>
       </Row>
 
-      <Row className="mb-4">
-        {/* Notification Settings */}
-        <Col md={6}>
-          <Card className={styles.card}>
-            <Card.Body>
-              <Card.Title><FaBell /> Notification Settings</Card.Title>
-              <Form>
-                <Form.Group controlId="enableNotifications">
-                  <Form.Check
-                    type="checkbox"
-                    label="Enable Notifications"
-                    name="enableNotifications"
-                    checked={formData.enableNotifications}
-                    onChange={handleCheckboxChange}
-                  />
-                </Form.Group>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        {/* Theme Settings */}
-        <Col md={6}>
-          <Card className={styles.card}>
-            <Card.Body>
-              <Card.Title><FaPalette /> Theme Settings</Card.Title>
-              <Form>
-                <Form.Group controlId="theme">
-                  <Form.Label>Select Theme</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="theme"
-                    value={formData.theme}
-                    onChange={handleInputChange}
-                  >
-                    <option value="light">Light Theme</option>
-                    <option value="dark">Dark Theme</option>
-                  </Form.Control>
-                </Form.Group>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+     
 
       {/* Save Changes Button */}
       <Row>

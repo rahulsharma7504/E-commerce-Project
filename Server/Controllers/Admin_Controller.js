@@ -1,12 +1,20 @@
+const dotenv = require('dotenv').config()
 const userDB = require('../Models/userModel');
 const vendorDB = require('../Models/vendorModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const CategoryModel = require('../Models/categoryModel');
+const ProductModel = require('../Models/productModel');
+const path = require('path');
 
+const ReviewModel = require('../Models/reviewsModel');
+const cloudinary = require('cloudinary').v2;
 
-
-
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // User Management API
 
@@ -134,10 +142,10 @@ const getAllVendors = async (req, res) => {
 
 const updateUserOrVendorDetails = async (req, res) => {
     try {
-        const {  userId, updatedData } = req.body;
+        const { userId, updatedData } = req.body;
 
-       
-        const VendorData={
+
+        const VendorData = {
             name: updatedData.name || userToUpdate.name,
             email: updatedData.email || userToUpdate.email,
             phone: updatedData.phone || userToUpdate.phone,
@@ -156,7 +164,7 @@ const updateUserOrVendorDetails = async (req, res) => {
             }
 
             Object.assign(vendorDetails, VendorData);
-            Object.assign(userToUpdate, VendorData)    
+            Object.assign(userToUpdate, VendorData)
 
             await vendorDetails.save();
             await userToUpdate.save();
@@ -201,7 +209,7 @@ const deleteVendor = async (req, res) => {
             }
         }
         res.status(200).json({ message: "Vendor deleted successfully" });
-        
+
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: 'Something went wrong', error: error.message });
@@ -234,7 +242,7 @@ const createCategory = async (req, res) => {
         const createCategory = await new CategoryModel({
             name: category.toLowerCase(), // Assuming you're using a predefined category name for now
         }).save();
-        return res.status(201).json({ message: "Category Created"});
+        return res.status(201).json({ message: "Category Created" });
     } catch (error) {
         if (error) throw error;
         return res.status(500).json({ error: "Internal Server Error" });
@@ -245,9 +253,9 @@ const createCategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
     try {
-        const { categoryName,categoryId } = req.body;
+        const { categoryName, categoryId } = req.body;
         const updateCat = await CategoryModel.findByIdAndUpdate({ _id: categoryId }, { $set: { name: categoryName } }, { new: true });
-        return res.status(200).json({ message: "Category Updated"});
+        return res.status(200).json({ message: "Category Updated" });
     } catch (error) {
         if (error) throw error;
         return res.status(500).json({ error: "Internal Server Error" });
@@ -261,7 +269,7 @@ const DeleteCategory = async (req, res) => {
 
         const { categoryId } = req.params;
         const deleteCategory = await CategoryModel.findByIdAndDelete({ _id: categoryId });
-        res.status(200).json({ message: "Category Deleted"});
+        res.status(200).json({ message: "Category Deleted" });
     } catch (error) {
         console.error(error); // Log the error for debugging
         res.status(500).json({ error: "Internal Server Error" });
@@ -273,23 +281,27 @@ const DeleteCategory = async (req, res) => {
 
 
 
-
 const createProduct = async (req, res) => {
     const { name, description, price, stockQuantity, color, categoryName, vendorId } = req.body;
 
     try {
-        const productImages = req.files.map(file => file.path);
-
-        // Check if the product already exists
-        const findexistProduct = await ProductModel.findOne({ name });
-        if (findexistProduct) {
-            return res.status(400).json({ error: "Product already exists" });
+        if (!name || !description || !price || !stockQuantity || !color || !categoryName || !vendorId) {
+            return res.status(400).json({ message: "All fields are required" });
         }
 
-        // Find the category by name
-        const category = await CategoryModel.findOne({ name: categoryName.toLowerCase() });
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: "No images uploaded" });
+        }
+
+        const productImages = req.files.map(file => file.path);
+        const findexistProduct = await ProductModel.findOne({ name });
+        if (findexistProduct) {
+            return res.status(400).json({ message: "Product already exists" });
+        }
+
+        const category = await CategoryModel.findOne({ name: categoryName });
         if (!category) {
-            return res.status(400).json({ error: "Category not found" });
+            return res.status(400).json({ message: "Category not found" });
         }
 
         // Upload images to Cloudinary
@@ -297,15 +309,12 @@ const createProduct = async (req, res) => {
             productImages.map((filePath, index) =>
                 cloudinary.uploader.upload(filePath)
             )
-        );
-
-        // Extract secure URLs from uploaded images
+        )
         const imageUrls = uploadedImages.map(image => image.secure_url);
 
-        // Create a new product
         const product = new ProductModel({
             name,
-            images: imageUrls, // Save all image URLs as an array
+            images: imageUrls,
             price,
             stockQuantity,
             color,
@@ -314,14 +323,19 @@ const createProduct = async (req, res) => {
             vendor: vendorId,
         });
 
-        // Save the product to the database
         await product.save();
-        const updateCategory = await CategoryModel.findOne({ name: categoryName.toLowerCase() });
-        // Add the new product's ID to the category's products array
-        updateCategory.products.push(product._id);
-        await updateCategory.save();
 
-        res.status(201).json({ message: "Product created successfully", product, updateCategory });
+        category.products = category.products || [];
+        category.products.push(product._id);
+        await category.save();
+        // Save Product to vendor Account
+        const vendor = await vendorDB.findById(vendorId);
+        vendor.products = vendor.products || [];
+        vendor.products.push(product._id);
+        await vendor.save();
+
+
+        res.status(201).json({ message: "Product created successfully" });
     } catch (error) {
         console.error("Error creating product:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -331,19 +345,16 @@ const createProduct = async (req, res) => {
 
 
 
+
 const AllProduct = async (req, res) => {
     try {
         // const allProduct = await ProductModel.find().populate('reviews');
         const allProducts = await ProductModel.find().populate({
-            path: 'reviews',
-            select:'comment -_id',
-            populate: {
-                path: 'user', // Populating the 'user' field inside 'reviews'
-                select: 'name -_id' // Specify fields you want to fetch
-            }
+            path: 'category',
+            select: 'name' // only return the name of the category,
         });
 
-        res.status(200).json({ message: "All Product", Product: allProducts, totel: allProducts.length });
+        res.status(200).json(allProducts);
     } catch (error) {
         console.error(error); // Log the error for debugging
         return res.status(500).json({ error: "Internal Server Error" });
@@ -369,7 +380,7 @@ const UpdateProduct = async (req, res) => {
         }
         const imageUrls = uploadedImages.map(image => image.secure_url);
 
-        const category = await CategoryModel.findOne({ name: categoryName.toLowerCase() });
+        const category = await CategoryModel.findOne({ name: categoryName });
         if (!category) {
             return res.status(400).json({ error: "Category not found" });
         }
@@ -435,6 +446,45 @@ const DeleteProduct = async (req, res) => {
     }
 }
 
+// Admin Update Profile
+
+const updateProfile = async (req, res) => {
+    try {
+        const { name, email, currentPassword, newPassword, confirmPassword, userId } = req.body;
+
+        const user = await userDB.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (currentPassword, newPassword, confirmPassword) {
+            if (newPassword && newPassword !== confirmPassword) {
+                return res.status(400).json({ message: "Passwords do not match" });
+            }
+            // Check if current password matches
+            const match = await bcrypt.compare(currentPassword, user.password);
+            if (!match) {
+                return res.status(401).json({ message: "Incorrect current password" });
+            }
+            // Hash the new password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            // Update the user's password
+            user.password = hashedPassword;
+        }
+
+        // Update the user's name and email
+        user.name = name;
+        user.email = email;
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json({ message: "User profile updated successfully" });
+
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+}
 
 
 module.exports = {
@@ -452,6 +502,7 @@ module.exports = {
     AllProduct,
     UpdateProduct,
     DeleteProduct,
+    updateProfile
 }
 
 

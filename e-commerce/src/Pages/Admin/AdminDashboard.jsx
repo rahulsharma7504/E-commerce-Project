@@ -3,7 +3,14 @@ import { Container, Row, Col, Card, Button, ProgressBar } from 'react-bootstrap'
 import { FaUser, FaStore, FaDollarSign, FaClipboardList, FaChartLine } from 'react-icons/fa';
 import styles from '../../Styles/AdminCSS/AdminDashboard.module.css'; // Import the CSS module
 
+import { useUsers } from '../../Context/AdminContext/Management/UserManageContext';
+import { useVendor } from '../../Context/AdminContext/Management/VendorManageContext';
 const Admin = () => {
+
+  const { users } = useUsers();
+  const { vendors } = useVendor();
+
+
   return (
     <Container fluid className={styles.dashboardContainer}>
       <Row className="mb-4">
@@ -15,7 +22,7 @@ const Admin = () => {
                 <FaUser />
               </div>
               <Card.Title>Total Users</Card.Title>
-              <Card.Text className={styles.cardText}>1,250</Card.Text>
+              <Card.Text className={styles.cardText}>{users.length}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -27,7 +34,7 @@ const Admin = () => {
                 <FaStore />
               </div>
               <Card.Title>Total Vendors</Card.Title>
-              <Card.Text className={styles.cardText}>320</Card.Text>
+              <Card.Text className={styles.cardText}>{vendors.length}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
