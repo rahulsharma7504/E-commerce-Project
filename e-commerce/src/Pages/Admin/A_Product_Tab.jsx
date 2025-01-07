@@ -95,7 +95,7 @@ const ProductsPage = () => {
                       <td>{product?.category && (
                         product.category.name
                       )}</td>
-                      <td>{product.price}</td>
+                      <td>${product.price}</td>
                       <td>{product.color}</td>
                       <td>
                        

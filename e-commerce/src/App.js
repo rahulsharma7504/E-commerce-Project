@@ -41,7 +41,7 @@ import { UserProvider } from './Context/AdminContext/Management/UserManageContex
 import { VendorProvider } from './Context/AdminContext/Management/VendorManageContext';
 import { CategoryProvider } from './Context/AdminContext/CategoryManageContext';
 import { ProductProvider } from './Context/AdminContext/Management/ProductsManageContext';
-
+import { VendorProductProvider } from './Context/VendorContext/VendorProductContext';
 
 function App() {
   return (
@@ -54,6 +54,7 @@ function App() {
             <CategoryProvider>
             <VendorProvider>
               <UserProvider>
+                <VendorProductProvider>
 
                 <Routes>
                   <Route path="/login" element={<Login />} />
@@ -91,6 +92,7 @@ function App() {
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                </VendorProductProvider>
               </UserProvider>
             </VendorProvider>
             </CategoryProvider>

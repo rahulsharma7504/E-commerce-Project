@@ -19,9 +19,9 @@ const upload = multer({ storage: storage })
 const uploadMultiple = upload.array('images', 5); // 'images' is the field name, max 5 files
 
 
-vendorRoutes.post('/create-product', Secure, isVendor, uploadMultiple, Vendor_Controller.createProduct)
-vendorRoutes.get('/product', Secure, isVendor, Vendor_Controller.AllProduct)
-vendorRoutes.put('/product/:productId', Secure, isVendor, uploadMultiple, Vendor_Controller.UpdateProduct)
+vendorRoutes.post('/create-product/:vendorId', Secure, isVendor, uploadMultiple, Vendor_Controller.createProduct)
+vendorRoutes.get('/product/:vendorId', Secure, isVendor, Vendor_Controller.AllProduct)
+vendorRoutes.put('/product/:vendorId', Secure, isVendor, uploadMultiple, Vendor_Controller.UpdateProduct)
 vendorRoutes.delete('/product/:productId', Secure, isVendor, uploadMultiple, Vendor_Controller.DeleteProduct)
 
 
