@@ -7,8 +7,8 @@ import { useVendorProduct } from "../../Context/VendorContext/VendorProductConte
 import LoadingPage from "../../Components/Loading/Loading";
 
 const VendorProductsManagementPage = () => {
-const {products,setProducts, addProduct, deleteProduct, loading} = useVendorProduct()
- 
+  const { products, setProducts, addProduct, deleteProduct, loading } = useVendorProduct()
+
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
@@ -22,11 +22,11 @@ const {products,setProducts, addProduct, deleteProduct, loading} = useVendorProd
     setShowModal(true);
   };
 
- 
+
   const handleSaveProduct = (product) => {
     if (editProduct) {
       const updatedProducts = products.map((p) =>
-        p._id === editProduct._id ? { ...p, ...product } : p
+        p?._id === editProduct?._id ? { ...p, ...product } : p
       );
       setProducts(updatedProducts);
     } else {
@@ -37,64 +37,71 @@ const {products,setProducts, addProduct, deleteProduct, loading} = useVendorProd
 
   return (
     <>
-        {loading && <LoadingPage/>}
-        
-    <div className={styles.productsPage}>
-      <h1 className={styles.title}>Vendor Product Management</h1>
-      <button className={styles.addButton} onClick={handleAddProduct}>
-        <FaPlusCircle /> Add Product
-      </button>
+      {loading ? <LoadingPage />
+        : (
+          <>
+            <div className={styles.productsPage}>
+              <h1 className={styles.title}>Vendor Product Management</h1>
+              <button className={styles.addButton} onClick={handleAddProduct}>
+                <FaPlusCircle /> Add Product
+              </button>
 
-      <div className={styles.tableContainer}>
-        <table className={styles.productsTable}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <td>{product.name}</td>
-                <td>${product.price}</td>
-                <td>{product.description}</td>
-                <td>
-                  <button
-                    className={styles.editButton}
-                    onClick={() => handleEditProduct(product)}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => deleteProduct(product._id)}
-                  >
-                    <FaTrashAlt />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              <div className={styles.tableContainer}>
+                <table className={styles.productsTable}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Description</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product) => (
+                      <tr key={product?._id}>
+                        <td>{product?.name}</td>
+                        <td>${product?.price}</td>
+                        <td>{product?.description}</td>
+                        <td>
+                          <button
+                            className={styles.editButton}
+                            onClick={() => handleEditProduct(product)}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            className={styles.deleteButton}
+                            onClick={() => deleteProduct(product?._id)}
+                          >
+                            <FaTrashAlt />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-      {showModal && (
-        <ProductModal
-          product={editProduct}
-          onClose={() => setShowModal(false)}
-          onSave={handleSaveProduct}
-        />
-      )}
-    </div>
+              {showModal && (
+                <ProductModal
+                  product={editProduct}
+                  onClose={() => setShowModal(false)}
+                  onSave={handleSaveProduct}
+                />
+              )}
+            </div>
+
+          </>
+        )
+      }
+
+
     </>
   );
 };
 
 const ProductModal = ({ product, onClose, onSave }) => {
-const { addProduct, editProduct} = useVendorProduct()
+  const { addProduct, editProduct } = useVendorProduct()
 
   const { categories } = useCategory();
   const colors = [
@@ -104,13 +111,13 @@ const { addProduct, editProduct} = useVendorProduct()
   ];
 
   const [formData, setFormData] = useState({
-    productId: product? product._id : null,
+    productId: product ? product?._id : null,
     name: product ? product.name : "",
     price: product ? product.price : "",
     description: product ? product.description : "",
     stockQuantity: product ? product.stockQuantity : "",
     color: product ? product.color : "",
-    categoryName: product ? product.name : "",
+    categoryName: product ? product.category.name : "",
   });
   const [images, setImages] = useState([]);
 
@@ -220,14 +227,14 @@ const { addProduct, editProduct} = useVendorProduct()
             <Form.Label>Category</Form.Label>
             <Form.Select
               name="categoryName"
-              value={formData?.categoryName}
+              value={formData.categoryName}
               onChange={handleChange}
               required
             >
               <option value="">Select Category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.name}>
-                  {category.name}
+              {categories?.map((category, index) => (
+                <option key={index} value={category?.name}>
+                  {category?.name}
                 </option>
               ))}
             </Form.Select>

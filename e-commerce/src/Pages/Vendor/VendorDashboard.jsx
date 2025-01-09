@@ -2,8 +2,9 @@ import React from 'react';
 import { Container, Row, Col, Card, Button, Table } from 'react-bootstrap';
 import { FaBox, FaListAlt, FaChartLine, FaShippingFast, FaMoneyBillWave } from 'react-icons/fa'; // React Icons
 import styles from "../../Styles/VendorCSS/vendorDashboard.module.css";
-
+import { useVendorProduct } from '../../Context/VendorContext/VendorProductContext';
 const VendorDashboard = () => {
+  const {products}=useVendorProduct()
   return (
     <Container fluid className={styles.dashboardContainer}>
       <Row>
@@ -13,7 +14,7 @@ const VendorDashboard = () => {
             <Card.Body>
               <FaBox className={styles.cardIcon} />
               <Card.Title>Products</Card.Title>
-              <Card.Text>50 Products</Card.Text>
+              <Card.Text>{products.length}</Card.Text>
             </Card.Body>
           </Card>
         </Col>

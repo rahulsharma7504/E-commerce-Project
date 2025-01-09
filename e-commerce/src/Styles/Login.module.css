@@ -1,0 +1,129 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+
+
+/* Container */
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    background-color: #dbdbdb;
+}
+
+/* Form Styles */
+.loginForm {
+    background-color: #91ade0;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Title */
+.loginForm h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.inputField {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.inputField:focus {
+    border-color: #4caf50;
+    outline: none;
+}
+
+/* Button Styles */
+.loginBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.loginBtn:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+.loginBtn:hover {
+    background-color: #45a049;
+}
+
+/* Signup Link */
+.signupLink {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.signupLink p {
+    color: #777;
+}
+
+.signupLink a {
+    color: #4caf50;
+    text-decoration: none;
+}
+
+.signupLink a:hover {
+    text-decoration: underline;
+}
+
+/* Loading Indicator */
+.loadingPage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .loginForm {
+        padding: 20px;
+        width: 90%;
+        max-width: 100%;
+    }
+
+    .loginForm h1 {
+        font-size: 24px;
+    }
+
+    .inputField {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .loginBtn {
+        padding: 14px;
+        font-size: 16px;
+    }
+}

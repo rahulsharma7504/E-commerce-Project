@@ -2,16 +2,19 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useCategory } from "../AdminContext/CategoryManageContext";
+
 
 // Create the context
 const ProductManageContext = createContext();
 
 // Provider component
 export const VendorProductProvider = ({ children }) => {
-    const [loading, setLoading]=useState(false);
+    const {readCategories}=useCategory()
+    const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
 
-    var vendorId = JSON.parse(localStorage.getItem('user'))._id;
+    var vendorId = JSON.parse(localStorage.getItem('user'))?._id;
 
     // Function to add a new product
     const addProduct = async (product) => {
@@ -47,7 +50,7 @@ export const VendorProductProvider = ({ children }) => {
 
             if (res.status === 201) {
                 toast.success(res.data.message);
-                getProducts();
+                getVendorProducts();
                 setLoading(false);
             }
         } catch (error) {
@@ -60,13 +63,14 @@ export const VendorProductProvider = ({ children }) => {
 
 
     // Read Products (Get all products)
-    const getProducts = async () => {
+    const getVendorProducts = async () => {
         try {
+            setLoading(true);
             // Replace with your API call or data fetching logic
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/product/${vendorId}`, { withCredentials: true });
             if (response.status === 200) {
                 setProducts(response.data)
-
+                setLoading(false);  
             }
         }
         catch (err) {
@@ -111,7 +115,7 @@ export const VendorProductProvider = ({ children }) => {
 
             if (res.status === 200) {
                 toast.success(res.data.message);
-                getProducts();
+                getVendorProducts();
                 setLoading(false);
             }
         } catch (error) {
@@ -120,27 +124,34 @@ export const VendorProductProvider = ({ children }) => {
     };
 
     // Function to delete a product
-    const deleteProduct = async(productID) => {
-       try{
-        const response = await axios.delete(`${process.env.REACT_APP_API_URL}/vendor/product/${productID}`, { withCredentials: true });
-        if(response.status === 200){
-            toast.success(response.data.message);
-            getProducts();
-        }
+    const deleteProduct = async (productID) => {
+        try {
+            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/vendor/product/${productID}`, { withCredentials: true });
+            if (response.status === 200) {
+                toast.success(response.data.message);
+                getVendorProducts();
+            }
 
-       }catch(error){
-       toast.error(error.response.data.message)
-       }
+        } catch (error) {
+            toast.error(error.response.data.message)
+        }
     };
 
 
-    useEffect(() => {
-        getProducts();
+    useEffect(async() => {
+
+        if (localStorage.getItem('user')) {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            if (storedUser.role === 'vendor') {
+               await readCategories();
+               await getVendorProducts();
+
+            }
+          }
     }, [])
     return (
         <ProductManageContext.Provider
-            value={{ products, setProducts, addProduct, editProduct, deleteProduct }}
-        >
+            value={{ products, setProducts,getVendorProducts, addProduct, loading, editProduct, deleteProduct }}>
             {children}
         </ProductManageContext.Provider>
     );
@@ -148,3 +159,6 @@ export const VendorProductProvider = ({ children }) => {
 
 // Hook to use the context
 export const useVendorProduct = () => useContext(ProductManageContext);
+
+
+

@@ -8,4 +8,4 @@ const vendorSchema = mongoose.Schema({
 }, { timestamps: true })
 
 const vendorModel = mongoose.model('Vendor', vendorSchema);
-module.exports = vendorModel    
+module.exports = vendorModel     

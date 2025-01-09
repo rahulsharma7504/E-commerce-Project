@@ -6,8 +6,8 @@ import { useProduct } from '../../Context/AdminContext/Management/ProductsManage
 import { useCategory } from '../../Context/AdminContext/CategoryManageContext';
 
 const ProductsPage = () => {
-  const { products, setProducts, updateProduct, deleteProduct } = useProduct()
-  const { categories } = useCategory()
+  const { products, setProducts, updateProduct, deleteProduct } = useProduct();
+  const { categories } = useCategory();
 
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false); // State for editing a product
@@ -16,11 +16,7 @@ const ProductsPage = () => {
   const [filteredCategory, setFilteredCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Add new product
-
-
-
-  // Filter products by category
+  // Filter products by category and search term
   const filterProducts = () => {
     let filtered = products;
 
@@ -58,12 +54,11 @@ const ProductsPage = () => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              {
-                categories && categories.map(category => (
-                  <Dropdown.Item key={category._id} onClick={() => setFilteredCategory(category.name)}>
-                    {category.name}
-                  </Dropdown.Item>
-                ))}
+              {categories && categories.map(category => (
+                <Dropdown.Item key={category._id} onClick={() => setFilteredCategory(category.name)}>
+                  {category.name}
+                </Dropdown.Item>
+              ))}
             </Dropdown.Menu>
           </Dropdown>
         </Col>
@@ -79,7 +74,7 @@ const ProductsPage = () => {
               <Table striped bordered hover responsive>
                 <thead>
                   <tr>
-                    <th>Product ID</th>
+                    <th>Sr.No</th>
                     <th>Name</th>
                     <th>Category</th>
                     <th>Price</th>
@@ -88,33 +83,28 @@ const ProductsPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filterProducts().map(product => (
-                    <tr key={product._id}>
-                      <td>{product._id.trim(3)}</td>
-                      <td>{product.name}</td>
-                      <td>{product?.category && (
-                        product.category.name
-                      )}</td>
-                      <td>${product.price}</td>
-                      <td>{product.color}</td>
-                      <td>
-                       
-                        <Button variant="danger" onClick={() => deleteProduct(product._id)}>
-                          <FaTrash /> Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {filterProducts().map((product, index) => {
+                    return (
+                      <tr key={product._id}>
+                        <td>{index + 1}</td>
+                        <td>{product.name}</td>
+                        <td>{product?.category?.name}</td> {/* Safely access the category name */}
+                        <td>${product.price}</td>
+                        <td>{product.color}</td>
+                        <td>
+                          <Button variant="danger" onClick={() => deleteProduct(product._id)}>
+                            <FaTrash /> Delete
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-
-
-
-
     </Container>
   );
 };

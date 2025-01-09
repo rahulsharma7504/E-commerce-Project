@@ -29,9 +29,20 @@ const UserNavbar = () => {
                 id="dropdown-custom-components"
                 title="My Account"
               >
-                <Dropdown.Item as="button" onClick={()=>navigate('/login')}>Sign in</Dropdown.Item>
-                <Dropdown.Item as="button" onClick={()=>navigate('/sign-up')}>Sign up</Dropdown.Item>
-                {user && <Dropdown.Item as="button" onClick={() => navigate('/shop/cart')}>Cart</Dropdown.Item>}
+                {
+                  user ? (
+                    <>
+                      <Dropdown.Item as="button" onClick={() => logout()}>Logout</Dropdown.Item>
+                      <Dropdown.Item as="button" onClick={() => navigate('/profile')}>Profile</Dropdown.Item>
+                      <Dropdown.Item as="button" onClick={() => navigate('/shop/cart')}>Cart</Dropdown.Item>
+                    </>
+                  ) : (
+                    <>
+                      <Dropdown.Item as="button" onClick={() => navigate('/login')}>Sign in</Dropdown.Item>
+                      <Dropdown.Item as="button" onClick={() => navigate('/sign-up')}>Sign up</Dropdown.Item>
+                    </>
+                  )
+                }
               </DropdownButton>
 
               <div class="btn-group">
@@ -56,11 +67,11 @@ const UserNavbar = () => {
           </div>
         </div>
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
-          <div class="col-lg-4">
-            <a href="" class="text-decoration-none">
+          <div class="col-lg-4" >
+            <Link class="text-decoration-none" to='/'>
               <span class="h1 text-uppercase text-primary bg-dark px-2">Multi</span>
               <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
-            </a>
+            </Link>
           </div>
           <div class="col-lg-4 col-6 text-left">
             <form action="">
@@ -131,15 +142,7 @@ const UserNavbar = () => {
                     <Nav.Link as={Link} to="/shop" className="nav-item nav-link">
                       Shop
                     </Nav.Link>
-                    <Nav.Link as={Link} to="/shop/shop-detail" className="nav-item nav-link">
-                      Shop Detail
-                    </Nav.Link>
-
-                  
-
-                    <Nav.Link as={Link} to="/contact" className="nav-item nav-link">
-                      Contact
-                    </Nav.Link>
+                   
                   </Nav>
 
                   {/* Right-aligned buttons */}
@@ -151,7 +154,7 @@ const UserNavbar = () => {
                       </Badge>
                     </Button>
 
-                    <Button variant="link" className="px-0 ml-3">
+                    <Button variant="link" className="px-0 ml-3" onClick={()=> navigate('/shop/cart')}>
                       <FaShoppingCart className="text-primary" />
                       <Badge pill className="text-dark border  rounded-circle" style={{ paddingBottom: '2px' }}>
                         0

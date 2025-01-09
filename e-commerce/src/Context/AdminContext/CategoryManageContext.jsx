@@ -2,6 +2,9 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
+import { useProduct } from './Management/ProductsManageContext';
+import { useUsers } from './Management/UserManageContext';
+import { useVendor } from './Management/VendorManageContext';
 const CategoryContext = createContext();
 
 export const useCategory = () => useContext(CategoryContext);
@@ -9,8 +12,6 @@ export const useCategory = () => useContext(CategoryContext);
 
 // CategoryProvider Component - Wrap this around your app to provide context
 export const CategoryProvider = ({ children }) => {
-    const { fetchUser } = useAuth();
-
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
 
@@ -91,7 +92,7 @@ export const CategoryProvider = ({ children }) => {
                 const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/update-profile`, formData, { withCredentials: true });
                 if (res.status === 200) {
                     setLoading(false);
-                    fetchUser()
+                    window.location.reload();
                     toast.success('Admin settings updated successfully');
 
                 }
@@ -102,9 +103,9 @@ export const CategoryProvider = ({ children }) => {
         // Your admin settings update logic goes here...
     }
 
-    useEffect(() => {
-        readCategories();
-    }, [])
+    // useEffect(() => {
+    //     readCategories();
+    // }, [])
     return (
         <CategoryContext.Provider
             value={{ categories, setCategories, createCategory, adminSettings, readCategories, loading, updateCategory, deleteCategory }}
@@ -113,3 +114,8 @@ export const CategoryProvider = ({ children }) => {
         </CategoryContext.Provider>
     );
 };
+
+
+
+
+

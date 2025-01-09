@@ -6,6 +6,10 @@ const vendorDB = require('../Models/vendorModel');
 const productModel = require('../Models/productModel');
 const userDB = require('../Models/userModel');
 const mongoose=require('mongoose');
+
+
+
+
 const createProduct = async (req, res) => {
     const { name, description, price, stockQuantity, color, categoryName } = req.body;
     const { vendorId } = req.params;
@@ -95,7 +99,7 @@ const AllProduct = async (req, res) => {
         if(!findVendor){
             return res.status(404).json({ message: "Vendor not found" });
         }
-        const allProducts = await ProductModel.find({ vendor: findVendor._id });
+        const allProducts = await ProductModel.find({ vendor: findVendor._id }).populate('category')
         if (!allProducts) {
             return res.status(404).json({ message: "No products found for this vendor" });
         }

@@ -6,7 +6,7 @@ import UserNavbar from '../Components/Navbars/UserNavbar';
 import Footer from '../Components/Footer/Footer';
 import AdminFooter from '../Components/Footer/AdminFooter';
 const Layout = ({ children }) => {
-  const { user } = useAuth(); // Use the user context
+  const { user } = useAuth();  // Use the user context
   
   // Use a conditional rendering approach outside of JSX
   const headerContent = () => {

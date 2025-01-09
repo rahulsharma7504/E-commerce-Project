@@ -55,12 +55,10 @@ export const UserProvider = ({ children }) => {
     };
 
     // UseEffect to fetch users when the component mounts
-    useEffect(() => {
-        fetchUsers();
-    }, []);
+    
 
     return (
-        <UserContext.Provider value={{ users, setUsers, loading, deleteUser, changeUserStatus }}>
+        <UserContext.Provider value={{ users, fetchUsers, setUsers, loading, deleteUser, changeUserStatus }}>
             {children}
         </UserContext.Provider>
     );

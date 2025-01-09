@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import toast from 'react-hot-toast';
-
+import { useUsers } from './UserManageContext';
+import { useVendor } from './VendorManageContext';
+import { useCategory } from '../CategoryManageContext';
 // Create the Product Context
 const ProductContext = createContext();
 
@@ -12,6 +14,9 @@ export const useProduct = () => {
 
 // ProductProvider component to provide product data and functions to the app
 export const ProductProvider = ({ children }) => {
+  const { readCategories } = useCategory();
+  const { fetchVendors } = useVendor();
+  const { fetchUsers } = useUsers();
   const [products, setProducts] = useState([]);
 
   // Create Product (Add new product)
@@ -45,6 +50,7 @@ export const ProductProvider = ({ children }) => {
       );
 
       if (res.status === 201) {
+        getProducts();
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -54,7 +60,7 @@ export const ProductProvider = ({ children }) => {
 
 
   // Read Products (Get all products)
-  const getProducts = async() => {
+  const getProducts = async () => {
     try {
       // Replace with your API call or data fetching logic
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/product`, { withCredentials: true });
@@ -66,37 +72,38 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Update Product
-  const updateProduct = (id, updatedProduct) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === id ? { ...product, ...updatedProduct } : product
-      )
-    );
-  };
+  
 
   // Delete Product
-  const deleteProduct = async(productId) => {
+  const deleteProduct = async (productId) => {
     try {
       // Replace with your API call or data fetching logic
       const response = await axios.delete(`${process.env.REACT_APP_API_URL}/admin/product/${productId}`, { withCredentials: true });
-      if(response.status === 200) {
+      if (response.status === 200) {
         toast.success(response.data.message);
         getProducts();
-  
+
       }
     } catch (err) {
       toast.error(err.response.data.message);
     }
   };
 
-  useEffect(()=>{
-    getProducts();
-    // eslint-disable-next-line
-  },[]) ; // Dependency array to re-run the effect when deleteProduct changes
+  useEffect(async() => {
+    if (localStorage.getItem('user')) {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      if (storedUser.role === 'admin') {
+      await  getProducts();
+        await fetchUsers();
+       await fetchVendors();
+       await readCategories();
+      }
+    }
+
+  }, []); // Dependency array to re-run the effect when deleteProduct changes
 
   return (
-    <ProductContext.Provider value={{ products, setProducts, createProduct, getProducts, updateProduct, deleteProduct }}>
+    <ProductContext.Provider value={{ products, fetchUsers, readCategories,fetchVendors, setProducts, createProduct, getProducts, deleteProduct }}>
       {children}
     </ProductContext.Provider>
   );

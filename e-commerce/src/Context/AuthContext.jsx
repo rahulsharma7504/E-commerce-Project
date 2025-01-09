@@ -1,8 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Loading from '../Components/Loading/Loading'
+import Loading from '../Components/Loading/Loading';
 import toast from 'react-hot-toast';
+import { useVendorProduct } from './VendorContext/VendorProductContext';
+import { useProduct } from './AdminContext/Management/ProductsManageContext';
+import { useCategory } from './AdminContext/CategoryManageContext';
 // Create context
 export const AuthContext = createContext();
 
@@ -11,66 +14,82 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component
 export const AuthProvider = ({ children }) => {
+  const { readCategories } = useCategory()
+  const { getProducts, fetchUsers, fetchVendors } = useProduct();
+  const { getVendorProducts } = useVendorProduct();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);  // Loading is initially true
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
   // Function to fetch user data
   const fetchUser = async () => {
     try {
-      setLoading(true);
+      setLoading(true);  // Start loading when fetching user data
 
       const response = await axios.get(`${apiUrl}/user`, { withCredentials: true });
-      // Check if user is authenticated
-      setUser(response.data);
-      localStorage.setItem('user',JSON.stringify(response.data));
 
-      // Navigate based on role
-      switch (response.data.role) {
-        case 'admin':
-          navigate('/admin');
-          break;
-        case 'vendor':
+      if (response.data) {
+        setUser(response.data);
+        localStorage.setItem('user', JSON.stringify(response.data)); // Store user data in localStorage
+
+        if (response.data.role === 'vendor') {
+          await getVendorProducts();  // Fetch products for vendor
+          await readCategories(); // Read categories
           navigate('/vendor');
-          break;
-        default:
+        } else if (response.data.role === 'admin') {
+          navigate('/admin');
+          // Fetch admin-related data after successful login
+          await getProducts();
+          await fetchUsers();
+          await fetchVendors();
+          await readCategories()
+        } else {
           navigate('/');
+        }
       }
     } catch (error) {
       console.error('Failed to fetch user data', error);
-      setUser(null);
+      toast.error('Failed to fetch user data. Please try again.');
+      setUser(null); // Set user to null if error occurs
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false after fetching data
     }
   };
 
-  useEffect(()=>{
-    if(localStorage.getItem('user')) {
-      setUser(JSON.parse(localStorage.getItem('user')));
+  // Check for user in localStorage on initial load
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser)); // If user data exists in localStorage, set it in state
     } else {
-      setUser(null);
+      setUser(null); // Set user as null if no data exists in localStorage
     }
-  },[]);
+    setLoading(false); // Stop loading once the check is done
+  }, []);
+
   // Logout function
   const logout = async () => {
     try {
       const res = await axios.post(`${apiUrl}/logout`, {}, { withCredentials: true });
-      setUser(null);
-      if(res.status === 200) {
-      toast.success('Logged out successfully'); // For debug or integrate toast
-      // Replace alert with a toast notification for better UX
-      navigate('/login');
+      if (res.status === 200) {
+        setUser(null);
+        localStorage.removeItem('user'); // Remove user from localStorage
+        toast.success('Logged out successfully');
+        navigate('/login');  // Redirect to login page
       }
     } catch (error) {
       console.error('Failed to logout', error);
+      toast.error('Failed to log out. Please try again.');
     }
   };
 
- 
-
- 
+  // Context value to be provided
   const value = { user, loading, logout, fetchUser };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

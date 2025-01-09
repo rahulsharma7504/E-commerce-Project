@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import styles from '../Styles/signup.module.css'; // Importing the CSS Module
+
 const SignUp = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -16,7 +18,6 @@ const SignUp = () => {
       [name]: value
     });
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,63 +62,69 @@ const SignUp = () => {
   };
 
   return (
-    <div className="signup-container">
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter your name"
-            required
-          />
-        </div>
+    <div className={styles.signupContainer}>
+      <div className={styles.signupForm}>
+        <h2>Sign Up</h2>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              required
+              className={styles.inputField}
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter your email"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              required
+              className={styles.inputField}
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Enter your password"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+              className={styles.inputField}
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="phone">Phone</label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="Enter your phone number"
-            required
-          />
-        </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="phone">Phone</label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
+              required
+              className={styles.inputField}
+            />
+          </div>
 
-        <button type="submit">Sign Up</button>
-      </form>
+          <button type="submit" className={styles.submitBtn}>Sign Up</button>
+        </form>
+      </div>
     </div>
   );
 };

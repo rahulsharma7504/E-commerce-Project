@@ -124,9 +124,7 @@ const createVendor = async (req, res) => {
 
 const getAllVendors = async (req, res) => {
     try {
-        const allVendors = await vendorDB.find()
-            .limit(10)
-            .populate('user'); // Use 'user' instead of 'User' here
+        const allVendors = await vendorDB.find().populate('user'); // Use 'user' instead of 'User' here
 
         if (!allVendors || allVendors.length === 0) {
             return res.status(404).send({ message: "No vendors found" });

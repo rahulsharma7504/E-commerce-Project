@@ -78,9 +78,7 @@ export const VendorProvider = ({ children }) => {
             setLoading(false);
         }
     };
-    useEffect(() => {
-        fetchVendors(); // Fetch initial vendors list when the component mounts
-    }, [])
+    
 
     // Context value that will be provided to the components
     const value = {
