@@ -15,12 +15,12 @@
     align-items: center;
     height: 100vh;
     padding: 20px;
-    background-color: #dbdbdb;
+    background-color: #442b61;
 }
 
 /* Form Styles */
 .loginForm {
-    background-color: #91ade0;
+    background-color: #9e4d9a;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -28,7 +28,11 @@
     max-width: 400px;
     text-align: center;
 }
-
+p{
+    color: white;
+    font-size: 14px;
+    margin-top: 5px;
+}
 /* Title */
 .loginForm h1 {
     font-size: 28px;

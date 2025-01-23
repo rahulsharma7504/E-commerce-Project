@@ -1,0 +1,70 @@
+/* ForgetPassword.module.css */
+.container {
+    padding-top: 50px;
+    width: 40%;
+  }
+  
+  .formWrapper {
+    padding: 40px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  .formTitle {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #007bff;
+  }
+  
+  .inputIconContainer {
+    position: relative;
+  }
+  
+  .emailIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #007bff;
+  }
+  
+  input[type="email"] {
+    padding-left: 30px;
+  }
+  
+  .submitButton {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #007bff;
+    border: none;
+    font-size: 16px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submitButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .messageAlert {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

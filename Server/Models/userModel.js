@@ -10,7 +10,8 @@ const userSchema = mongoose.Schema({
     wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     cart: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     role: { type: String, enum: ['user', 'admin', 'vendor'], default: 'user' },
+    token:{type: String, default: null},
 }, { timestamps: true }, { strict: false })
 
 const userModel = mongoose.model('User', userSchema);
-module.exports = userModel
+module.exports = userModel 

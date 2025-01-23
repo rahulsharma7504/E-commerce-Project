@@ -69,8 +69,11 @@ export default function Login() {
                     {loading ? 'Logging in...' : 'Login'}
                 </button>
 
-                <div className={styles.signupLink}>
+                <div >
                     <p>Don't have an account? <NavLink to="/sign-up">Sign Up</NavLink></p>
+                </div>
+                <div >
+                    <p>Forgot password? <NavLink to="/forgot-password">Forgot Password</NavLink></p>
                 </div>
 
                 {loading && <LoadingPage />} {/* Display loading page while logging in */}

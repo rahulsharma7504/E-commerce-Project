@@ -94,6 +94,7 @@ const AllProduct = async (req, res) => {
             return res.status(400).json({ message: "Invalid vendor ID" });
         }
         
+        // Find vendor by ID    
         const findVendor=await vendorDB.findOne({user:vendorId})
         
         if(!findVendor){

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useVendorProduct } from './VendorContext/VendorProductContext';
 import { useProduct } from './AdminContext/Management/ProductsManageContext';
 import { useCategory } from './AdminContext/CategoryManageContext';
+import { useUserApiContext } from './UserContext/UserApiContext';
 // Create context
 export const AuthContext = createContext();
 
@@ -14,6 +15,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component
 export const AuthProvider = ({ children }) => {
+  const {fetchCartItemsByProductId} = useUserApiContext();
   const { readCategories } = useCategory()
   const { getProducts, fetchUsers, fetchVendors } = useProduct();
   const { getVendorProducts } = useVendorProduct();
@@ -43,9 +45,11 @@ export const AuthProvider = ({ children }) => {
           await getProducts();
           await fetchUsers();
           await fetchVendors();
-          await readCategories()
+          await readCategories();
         } else {
           navigate('/');
+          await fetchCartItemsByProductId();
+
         }
       }
     } catch (error) {

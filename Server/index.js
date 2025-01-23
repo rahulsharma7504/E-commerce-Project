@@ -11,7 +11,7 @@ app.use(express.json())
 // Use CORS for Client Side Requests
 app.use(cookieParser());
 app.use(CORS({
-    origin: ['http://localhost:3000', 'https://your-client-side-url.com'],
+    origin: 'http://localhost:3000',
     credentials: true  // needed for cookies to work over HTTPS
  
 }));

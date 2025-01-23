@@ -5,7 +5,9 @@ import carousel3 from '../../Assets/img/carousel-3.jpg'
 import offer1 from '../../Assets/img/offer-1.jpg'
 import offer2 from '../../Assets/img/offer-2.jpg'
 import { Carousel, Col, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'
 const Carousels = () => {
+    const navigate=useNavigate();
     return (
         <>
             <div className="container-fluid mb-3">
@@ -26,7 +28,7 @@ const Carousels = () => {
                                         <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
                                             Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam.
                                         </p>
-                                        <Button href="#" variant="outline-light" className="py-2 px-4 mt-3 animate__animated animate__fadeInUp">
+                                        <Button onClick={()=>navigate('/shop')} variant="outline-light" className="py-2 px-4 mt-3 animate__animated animate__fadeInUp">
                                             Shop Now
                                         </Button>
                                     </div>
@@ -47,7 +49,7 @@ const Carousels = () => {
                                         <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
                                             Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam.
                                         </p>
-                                        <Button href="#" variant="outline-light" className="py-2 px-4 mt-3 animate__animated animate__fadeInUp">
+                                        <Button onClick={()=>navigate('/shop')} variant="outline-light" className="py-2 px-4 mt-3 animate__animated animate__fadeInUp">
                                             Shop Now
                                         </Button>
                                     </div>
@@ -68,7 +70,7 @@ const Carousels = () => {
                                         <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
                                             Lorem rebum magna amet lorem magna erat diam stet. Sadips duo stet amet amet ndiam elitr ipsum diam.
                                         </p>
-                                        <Button href="#" variant="outline-light" className="py-2 px-4 mt-3 animate__animated animate__fadeInUp">
+                                        <Button  onClick={()=>navigate('/shop')} variant="outline-light" className="py-2 px-4 mt-3 animate__animated animate__fadeInUp">
                                             Shop Now
                                         </Button>
                                     </div>
@@ -83,7 +85,7 @@ const Carousels = () => {
                             <div className="offer-text">
                                 <h6 className="text-white text-uppercase">Save 20%</h6>
                                 <h3 className="text-white mb-3">Special Offer</h3>
-                                <Button href="#" variant="primary">Shop Now</Button>
+                                <Button  onClick={()=>navigate('/shop')} variant="primary">Shop Now</Button>
                             </div>
                         </div>
 
@@ -93,7 +95,7 @@ const Carousels = () => {
                             <div className="offer-text">
                                 <h6 className="text-white text-uppercase">Save 20%</h6>
                                 <h3 className="text-white mb-3">Special Offer</h3>
-                                <Button href="#" variant="primary">Shop Now</Button>
+                                <Button  onClick={()=>navigate('/shop')} variant="primary">Shop Now</Button>
                             </div>
                         </div>
                     </Col>

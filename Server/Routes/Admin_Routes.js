@@ -3,7 +3,7 @@ const adminRoutes = express();
 const { Secure } = require('../Middleware/Auth');
 const multer = require('multer');
 
-const {roleSecure} =require('../Middleware/roleSecure');
+const { roleSecure} =require('../Middleware/roleSecure');
 const Admin_Controller = require('../Controllers/Admin_Controller')
 
 // Admin routes

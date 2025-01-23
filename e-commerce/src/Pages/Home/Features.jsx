@@ -1,6 +1,9 @@
 import React from 'react'
 import { FaCheck,FaShippingFast,FaExchangeAlt , FaPhoneVolume} from 'react-icons/fa';
+import { useUserData } from '../../Context/UserContext/UserContext';
 const Features = () => {
+    const {allProducts}=useUserData();
+    
     return (
         <>
             <div class="container-fluid pt-5">
