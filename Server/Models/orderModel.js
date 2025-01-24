@@ -1,31 +1,20 @@
+// models/Order.js
 const mongoose = require('mongoose');
-const { Schema } = mongoose; // Destructure Schema from mongoose
 
-const orderSchema = new Schema(
+const orderSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  billingDetails: { type: mongoose.Schema.Types.ObjectId, ref: 'BillingDetail', required: true },
+  items: [
     {
-        user: { type: Schema.Types.ObjectId, ref: 'User' }, // Reference to the User model
-
-        product: [{
-            product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-            quantity: { type: Number, required: true },
-            price: { type: Number, required: true }
-        }],
-        totalPrice: { type: Number, required: true },
-        status: {
-            type: String,
-            enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], // Order status
-            default: 'Pending',
-        },
-        vendor: { type: Schema.Types.ObjectId, ref: 'Vendor', required: true },  // Reference to Vendor schema
-
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+      quantity: { type: Number, required: true },
+      price: { type: Number, required: true },
     },
+  ],
+  totalAmount: { type: Number, required: true },
+  paymentMethod: { type: String, enum: ['paypal', 'razorpay'], required: true },
+  paymentStatus: { type: String, enum: ['pending', 'completed'], default: 'pending' },
+  createdAt: { type: Date, default: Date.now },
+});
 
-    {
-        timestamps: true, // Adds createdAt and updatedAt fields
-        strict: false // Allows extra fields not defined in the schema
-    }
-);
-
-const orderModel = mongoose.model('Order', orderSchema);
-module.exports = orderModel;
-
+module.exports = mongoose.model('Order', orderSchema);

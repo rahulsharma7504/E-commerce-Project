@@ -36,9 +36,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(response.data)); // Store user data in localStorage
 
         if (response.data.role === 'vendor') {
+          navigate('/vendor');
           await getVendorProducts();  // Fetch products for vendor
           await readCategories(); // Read categories
-          navigate('/vendor');
         } else if (response.data.role === 'admin') {
           navigate('/admin');
           // Fetch admin-related data after successful login

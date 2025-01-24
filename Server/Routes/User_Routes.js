@@ -49,5 +49,17 @@ userRoute.post('/cart-add', Secure, roleSecure(['user']), User_Controller.addToC
 userRoute.get('/cart-items/:userId', Secure, roleSecure(['user']), User_Controller.getUserCartItems);
 userRoute.delete('/cart/:userId/:productId', Secure, roleSecure(['user']), User_Controller.deleteCartItems);
 
+// User Checkout and payment
+
+userRoute.post('/checkout/:userId', Secure, roleSecure(['user']), User_Controller.checkout);
+userRoute.post('/order/create-order', Secure, roleSecure(['user']), User_Controller.createOrder);
+userRoute.post('/create-razorpay-order', Secure, roleSecure(['user']), User_Controller.razorpayOrderCreate);
+userRoute.post('/payment/verify-payment', Secure, roleSecure(['user']), User_Controller.verifypayment);
+
+// User Profile Management APi
+userRoute.get('/order/user-orders/:userId', Secure, roleSecure(['user']), User_Controller.profileOrders)
+userRoute.get('/user/user-reviews/:userId', Secure, roleSecure(['user']), User_Controller.profileReviews)
+
+
 
 module.exports = { userRoute }

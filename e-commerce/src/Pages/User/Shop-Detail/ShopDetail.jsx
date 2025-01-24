@@ -135,7 +135,7 @@ const ShopDetail = () => {
                             </div>
 
                             <h3 class="font-weight-semi-bold mb-4"><FaRupeeSign />{productDetails && productDetails?.price}</h3>
-                            <p class="mb-4">{productDetails && productDetails?.description.slice(0, 100) + ' ....'}</p>
+                            <p class="mb-4">{productDetails && productDetails?.description?.slice(0, 100) + ' ....'}</p>
 
                             <div class="d-flex mb-4">
                                 <strong class="text-dark mr-3">Colors:</strong>

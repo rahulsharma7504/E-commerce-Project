@@ -49,6 +49,7 @@ import ForgetPassword from './Auth/ForgotPassword';
 import { UserDataProvider } from './Context/UserContext/UserContext';
 import { UserApiContext, UserApiProvider } from './Context/UserContext/UserApiContext';
 import ResetPassword from './Auth/ResetPassword';
+import UserProfile from './Pages/User/Profile/profile';
 function App() {
   return (
     <>
@@ -93,6 +94,7 @@ function App() {
                           {/* User Routes */}
 
                           <Route path="/" element={<RoleBasedRoute allowedRoles={["user", "vendor"]}><Home /></RoleBasedRoute>} />
+                          <Route path="/profile" element={<RoleBasedRoute allowedRoles={["user", "vendor"]}><UserProfile /></RoleBasedRoute>} />
                           <Route path="/contact" element={<RoleBasedRoute allowedRoles={["user", "vendor"]}><Contact /></RoleBasedRoute>} />
                           <Route path="/shop" element={<Shop />} />
                           <Route path="/shop/cart" element={<RoleBasedRoute allowedRoles={["user"]}><Cart /></RoleBasedRoute>} />

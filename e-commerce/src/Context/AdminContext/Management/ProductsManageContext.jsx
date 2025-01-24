@@ -72,7 +72,7 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  
+
   // Delete Product
   const deleteProduct = async (productId) => {
     try {
@@ -88,21 +88,21 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  useEffect(async() => {
+  useEffect(async () => {
     if (localStorage.getItem('user')) {
       const storedUser = JSON.parse(localStorage.getItem('user'));
       if (storedUser.role === 'admin') {
-      await  getProducts();
+        await getProducts();
         await fetchUsers();
-       await fetchVendors();
-       await readCategories();
+        await fetchVendors();
+        await readCategories();
       }
     }
 
   }, []); // Dependency array to re-run the effect when deleteProduct changes
 
   return (
-    <ProductContext.Provider value={{ products, fetchUsers, readCategories,fetchVendors, setProducts, createProduct, getProducts, deleteProduct }}>
+    <ProductContext.Provider value={{ products, fetchUsers, readCategories, fetchVendors, setProducts, createProduct, getProducts, deleteProduct }}>
       {children}
     </ProductContext.Provider>
   );

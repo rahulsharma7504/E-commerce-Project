@@ -1,13 +1,23 @@
+const dotenv = require('dotenv').config();
 const userDB = require('../Models/userModel')
+const orderModel = require('../Models/orderModel')
 const cartModel = require('../Models/cartModel')
+const mongoose=require('mongoose');
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 const ReviewModel = require('../Models/reviewsModel');
 const categoryModel = require('../Models/categoryModel');
 const productModel = require('../Models/productModel');
-const {sendResetEmail}=require('../Config/Mail')
+const { sendResetEmail } = require('../Config/Mail')
 const randomString = require('randomstring');
+const BillingModel = require('../Models/BillingModel');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
+const razorpay = new Razorpay({
+    key_id: process.env.RezorPayKey_id,
+    key_secret: process.env.RezorPaySecret_id,
+});
 
 
 
@@ -84,26 +94,26 @@ const ForgotPassword = async (req, res) => {
         const { email } = req.body;
         console.log(email)
         // Check if the user exists
-        const user = userDB.find({email: email});
-      
+        const user = userDB.find({ email: email });
+
         if (!user) {
-          return res.status(404).json({ message: 'User not found.' });
+            return res.status(404).json({ message: 'User not found.' });
         }
-      
+
         // Create a reset token (in a real app, use a more secure method)
         const resetToken = randomString.generate({
             length: 20,
             charset: 'alphanumeric',
         })
-         user.token = resetToken;
+        user.token = resetToken;
         await user.save();
         // Send the reset email
         sendResetEmail(email, resetToken);
-      
+
         return res.status(200).json({ message: 'Password reset link sent to email.' });
-        
+
     } catch (error) {
-        
+
     }
 }
 
@@ -112,24 +122,24 @@ const ResetPassword = async (req, res) => {
         const { tokne, newPassword } = req.body;
 
         // Find the user with the reset token and check if the token is valid
-        const user = userDB.find({token:token});
-      
+        const user = userDB.find({ token: token });
+
         if (!user) {
-          return res.status(400).json({ message: 'Invalid or expired token.' });
+            return res.status(400).json({ message: 'Invalid or expired token.' });
         }
-      
+
         // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-      
+
         // Update the user's password
         user.password = hashedPassword;
         user.token = null;
         await user.save();
         return res.status(200).json({ message: 'Password reset successfully.' });
-        
+
     } catch (error) {
         console.log(error.message);
-        
+
     }
 }
 
@@ -704,10 +714,10 @@ const getUserCartItems = async (req, res) => {
 
 
 
-const deleteCartItems=async(req,res)=>{
+const deleteCartItems = async (req, res) => {
     try {
-        const { userId, productId } = req.params; 
-            console.log(userId,productId);
+        const { userId, productId } = req.params;
+        console.log(userId, productId);
         // Step 1: Find the cart for the user
         let userCart = await cartModel.findOne({ user: userId });
         if (!userCart) {
@@ -736,7 +746,7 @@ const deleteCartItems=async(req,res)=>{
         }
 
         // Find the quantity of the product in the cart
-        
+
 
         return res.status(200).json({ message: 'Item removed from cart ' });
 
@@ -746,7 +756,197 @@ const deleteCartItems=async(req,res)=>{
     }
 }
 
+const checkout = async (req, res) => {
+    try {
+        const { userId } = req.params;
 
+        const { firstName, lastName, address1, address2, country, city, state, zipCode, mobile, email } = req.body;
+
+        // Check for missing fields
+        if (!firstName || !lastName || !address1 || !country || !city || !state || !zipCode || !mobile || !email || !userId) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+        const findDetails = await BillingModel.find({ email: email })
+        if (findDetails.length > 0) {
+            await BillingModel.findOneAndDelete({ email: email });
+        }
+        // Create billing details object
+        const billingDetails = new BillingModel({
+            userId,
+            firstName,
+            lastName,
+            address: address1,
+            address2: address2,
+            country,
+            state,
+            city,
+            zipCode,
+            phone: mobile,
+            email,
+        });
+
+        // Save billing details to database
+        await billingDetails.save();
+        res.status(201).json({ message: 'Billing details saved successfully', billing: billingDetails });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error saving billing details', error });
+    }
+};
+
+const createOrder = async (req, res) => {
+    try {
+        const { userId, billingId, items, totalAmount, paymentMethod } = req.body;
+
+        const order = new orderModel({
+            userId,
+            billingDetails: billingId,
+            items,
+            totalAmount,
+            paymentMethod,
+        });
+
+        await order.save();
+
+        res.status(201).json({
+            message: 'Order created successfully',
+            orderId: order._id,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating order', error });
+    }
+}
+
+const razorpayOrderCreate = async (req, res) => {
+    try {
+        const { amount, orderId } = req.body; // Amount in paise (e.g., 50000 for ₹500)
+
+        const totalAmountInRupees = Number(amount);  // example amount
+        const totalAmountInPaise = totalAmountInRupees * 100;  // Convert to paise (if it's in INR)
+
+        const options = {
+            amount: totalAmountInPaise, // Amount in paise
+            currency: 'INR',
+            receipt: orderId,
+        };
+
+        const razorpayOrder = await razorpay.orders.create(options);
+        res.status(201).json({
+            success: true,
+            order: razorpayOrder,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error creating Razorpay order', error });
+    }
+
+}
+
+
+const verifypayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, userId, orderId } = req.body;
+
+        const body = razorpay_order_id + '|' + razorpay_payment_id;
+        const expectedSignature = crypto
+            .createHmac('sha256', process.env.RezorPaySecret_id) // Replace with your Razorpay Secret Key
+            .update(razorpay_order_id + '|' + razorpay_payment_id) // Concatenate order and payment IDs
+            .digest('hex');
+
+        console.log('Expected Signature:', expectedSignature); // Log the expected signature
+        console.log('Razorpay Signature:', razorpay_signature); // Log the received signature
+
+        if (expectedSignature === razorpay_signature) {
+            // Signature matches, proceed with the payment processing
+
+            // Update the order status to 'completed' after successful payment
+            await orderModel.findByIdAndUpdate(orderId, { $set: { paymentStatus: 'completed' } });
+
+            // Retrieve the cart items for the user
+            const order = await orderModel.findById(orderId);  // You can also query for the cart if needed
+            const cartItems = order.items; // Assuming order has an 'items' field with cart details
+
+            // Decrease the quantity of each product in the product model
+            for (let item of cartItems) {
+                const product = item.productId;  // Assuming the product id is stored in 'productId'
+                const quantityPurchased = item.quantity;
+
+                // Decrease the product quantity
+                await productModel.findByIdAndUpdate(product, {
+                    $inc: { stockQuantity: - quantityPurchased }
+                });
+
+                console.log(`Product ${product} quantity decreased by ${quantityPurchased}`);
+            }
+
+            // Delete the cart after successful payment
+            await cartModel.findOneAndDelete({ user: order.userId });
+
+            // Send success response
+            res.status(200).json({ success: true, message: 'Payment verified and cart updated successfully' });
+        } else {
+            res.status(400).json({ success: false, message: 'Invalid signature' });
+        }
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Payment verification failed', error });
+    }
+
+}
+
+const profileOrders = async (req, res) => {
+    try {
+        // Fetch userId from authenticated user (from middleware)
+        const { userId } = req.params;
+
+        // Find orders for the user
+        const orders = await orderModel.find({ userId })
+            .populate('items.productId', 'name price') // Populate product details
+            .populate('billingDetails', 'address') // Populate billing details
+            .sort({ createdAt: -1 }); // Sort by newest orders first
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: 'No purchase history found.' });
+        }
+
+        // Return the orders
+        res.status(200).json({ success: true, orders });
+    } catch (error) {
+        console.error('Error fetching purchase history:', error);
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+}
+
+const profileReviews = async (req, res) => {
+    try {
+        const {userId} = req.params;
+    
+        // Validate userId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ success: false, message: 'Invalid User ID' });
+        }
+    
+        // Convert to ObjectId
+        const objectId =new mongoose.Types.ObjectId(userId);
+    
+        // Fetch reviews for the user
+        const reviews = await ReviewModel.find({ user: objectId })
+          .populate('product', 'name price')
+          .sort({ createdAt: -1 });
+    
+        if (!reviews || reviews.length === 0) {
+          return res.status(404).json({ success: false, message: 'No reviews found.' });
+        }
+    
+        res.status(200).json({ success: true, reviews });
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        res.status(500).json({ success: false, message: 'Server error.' });
+      }
+    
+
+}
 
 module.exports = {
     Register,
@@ -776,5 +976,11 @@ module.exports = {
     productSearch,
     addToCart,
     getUserCartItems,
-    deleteCartItems
+    deleteCartItems,
+    checkout,
+    createOrder,
+    razorpayOrderCreate,
+    verifypayment,
+    profileOrders,
+    profileReviews
 }

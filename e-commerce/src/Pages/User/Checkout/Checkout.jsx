@@ -1,196 +1,292 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useUserApiContext } from '../../../Context/UserContext/UserApiContext'
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { FaRupeeSign } from 'react-icons/fa';
 
 const Checkout = () => {
+    const [billingMethod, setBillingMethod] = useState(false)
+    const { cart, handlePlaceOrder, setIsBillingSaved, isBillingSaved, setSelectedPaymentMethod, selectedPaymentMethod } = useUserApiContext();
+    const subtotal = cart?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+    const shipping = 10; // Example shipping cost
+    const total = subtotal + shipping;
+
+    // Manage form values
+    const [billingDetails, setBillingDetails] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        mobile: '',
+        address1: '',
+        address2: '',
+        country: 'United States',
+        city: '',
+        state: '',
+        zipCode: ''
+    });
+
+    // State to manage whether the billing details are saved
+
+    // Handle form changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setBillingDetails({
+            ...billingDetails,
+            [name]: value
+        });
+    };
+
+    // Handle save billing details
+    const handleSaveBilling = async () => {
+        try {
+            const userId = JSON.parse(localStorage.getItem('user'))?._id;
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/checkout/${userId}`, billingDetails, { withCredentials: true });
+            if (response.status === 201) {
+                toast.success('Billing details saved successfully!');
+                setIsBillingSaved(response.data.billing);
+                setBillingMethod(true);
+            }
+
+
+        } catch (error) {
+            toast.error(error.response?.data?.message);
+
+        }
+
+    };
+
+    const style = {
+        color: 'black'
+    }
+
+
+
+
+
+
+
     return (
         <>
-            <div class="container-fluid">
-                <div class="row px-xl-5">
-                    <div class="col-12">
-                        <nav class="breadcrumb bg-light mb-30">
-                            <a class="breadcrumb-item text-dark" href="#">Home</a>
-                            <a class="breadcrumb-item text-dark" href="#">Shop</a>
-                            <span class="breadcrumb-item active">Checkout</span>
+            <div className="container-fluid">
+                <div className="row px-xl-5">
+                    <div className="col-12">
+                        <nav className="breadcrumb bg-light mb-30">
+                            <a className="breadcrumb-item text-dark" href="#">Home</a>
+                            <a className="breadcrumb-item text-dark" href="#">Shop</a>
+                            <span className="breadcrumb-item active">Checkout</span>
                         </nav>
                     </div>
                 </div>
             </div>
             {/* Checkout start here */}
 
-            <div class="container-fluid">
-                <div class="row px-xl-5">
-                    <div class="col-lg-8">
-                        <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
-                        <div class="bg-light p-30 mb-5">
-                            <div class="row">
-                                <div class="col-md-6 form-group">
+            <div className="container-fluid">
+                <div className="row px-xl-5">
+                    <div className="col-lg-8">
+                        <h5 className="section-title position-relative text-uppercase mb-3"><span className="bg-secondary pr-3">Billing Address</span></h5>
+                        <div className="bg-light p-30 mb-5">
+                            <div className="row">
+                                <div className="col-md-6 form-group">
                                     <label>First Name</label>
-                                    <input class="form-control" type="text" placeholder="John"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="firstName"
+                                        value={billingDetails.firstName}
+                                        onChange={handleInputChange}
+                                        placeholder="John"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>Last Name</label>
-                                    <input class="form-control" type="text" placeholder="Doe"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="lastName"
+                                        value={billingDetails.lastName}
+                                        onChange={handleInputChange}
+                                        placeholder="Doe"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>E-mail</label>
-                                    <input class="form-control" type="text" placeholder="example@email.com"/>
+                                    <input
+                                        className="form-control"
+                                        type="email"
+                                        name="email"
+                                        value={billingDetails.email}
+                                        onChange={handleInputChange}
+                                        placeholder="example@email.com"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>Mobile No</label>
-                                    <input class="form-control" type="text" placeholder="+123 456 789"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="mobile"
+                                        value={billingDetails.mobile}
+                                        onChange={handleInputChange}
+                                        placeholder="+123 456 789"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>Address Line 1</label>
-                                    <input class="form-control" type="text" placeholder="123 Street"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="address1"
+                                        value={billingDetails.address1}
+                                        onChange={handleInputChange}
+                                        placeholder="123 Street"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>Address Line 2</label>
-                                    <input class="form-control" type="text" placeholder="123 Street"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="address2"
+                                        value={billingDetails.address2}
+                                        onChange={handleInputChange}
+                                        placeholder="Apt 1"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>Country</label>
-                                    <select class="custom-select">
+                                    <select
+                                        className="custom-select"
+                                        name="country"
+                                        value={billingDetails.country}
+                                        onChange={handleInputChange}
+                                    >
                                         <option selected>United States</option>
                                         <option>Afghanistan</option>
                                         <option>Albania</option>
                                         <option>Algeria</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>City</label>
-                                    <input class="form-control" type="text" placeholder="New York"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="city"
+                                        value={billingDetails.city}
+                                        onChange={handleInputChange}
+                                        placeholder="New York"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>State</label>
-                                    <input class="form-control" type="text" placeholder="New York"/>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="state"
+                                        value={billingDetails.state}
+                                        onChange={handleInputChange}
+                                        placeholder="New York"
+                                    />
                                 </div>
-                                <div class="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
                                     <label>ZIP Code</label>
-                                    <input class="form-control" type="text" placeholder="123"/>
-                                </div>
-                                <div class="col-md-12 form-group">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="newaccount"/>
-                                            <label class="custom-control-label" for="newaccount">Create an account</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="shipto"/>
-                                            <label class="custom-control-label" for="shipto" data-toggle="collapse" data-target="#shipping-address">Ship to different address</label>
-                                    </div>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="zipCode"
+                                        value={billingDetails.zipCode}
+                                        onChange={handleInputChange}
+                                        placeholder="123"
+                                    />
                                 </div>
                             </div>
-                        </div>
-                        <div class="collapse mb-5" id="shipping-address">
-                            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Shipping Address</span></h5>
-                            <div class="bg-light p-30">
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label>First Name</label>
-                                        <input class="form-control" type="text" placeholder="John"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>Last Name</label>
-                                        <input class="form-control" type="text" placeholder="Doe"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>E-mail</label>
-                                        <input class="form-control" type="text" placeholder="example@email.com"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>Mobile No</label>
-                                        <input class="form-control" type="text" placeholder="+123 456 789"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>Address Line 1</label>
-                                        <input class="form-control" type="text" placeholder="123 Street"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>Address Line 2</label>
-                                        <input class="form-control" type="text" placeholder="123 Street"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>Country</label>
-                                        <select class="custom-select">
-                                            <option selected>United States</option>
-                                            <option>Afghanistan</option>
-                                            <option>Albania</option>
-                                            <option>Algeria</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>City</label>
-                                        <input class="form-control" type="text" placeholder="New York"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>State</label>
-                                        <input class="form-control" type="text" placeholder="New York"/>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label>ZIP Code</label>
-                                        <input class="form-control" type="text" placeholder="123"/>
-                                    </div>
-                                </div>
-                            </div>
+                            <button className="btn btn-primary" onClick={handleSaveBilling}>
+                                Save Billing Details
+                            </button>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Order Total</span></h5>
-                        <div class="bg-light p-30 mb-5">
-                            <div class="border-bottom">
-                                <h6 class="mb-3">Products</h6>
-                                <div class="d-flex justify-content-between">
-                                    <p>Product Name 1</p>
-                                    <p>$150</p>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Product Name 2</p>
-                                    <p>$150</p>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Product Name 3</p>
-                                    <p>$150</p>
-                                </div>
+
+                    <div className="col-lg-4">
+                        <h5 className="section-title position-relative text-uppercase mb-3"><span className="bg-secondary pr-3">Order Total</span></h5>
+                        <div className="bg-light p-30 mb-5">
+                            <div className="border-bottom">
+                                <h6 className="mb-3">Products</h6>
+                                {cart?.items.map((item) => {
+                                    const { product, quantity } = item;
+                                    const totalPrice = product.price * quantity;
+
+                                    return (
+                                        <div key={item._id} className="d-flex justify-content-between">
+                                            <p style={style}>{product.name}</p>
+                                            <p style={style}>${totalPrice}</p>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                            <div class="border-bottom pt-3 pb-2">
-                                <div class="d-flex justify-content-between mb-3">
+
+                            <div className="border-bottom pt-3 pb-2">
+                                <div className="d-flex justify-content-between mb-3">
                                     <h6>Subtotal</h6>
-                                    <h6>$150</h6>
+                                    <h6>${subtotal}</h6>
                                 </div>
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="font-weight-medium">Shipping</h6>
-                                    <h6 class="font-weight-medium">$10</h6>
+                                <div className="d-flex justify-content-between">
+                                    <h6 className="font-weight-medium">Shipping</h6>
+                                    <h6 className="font-weight-medium">${shipping}</h6>
                                 </div>
                             </div>
-                            <div class="pt-2">
-                                <div class="d-flex justify-content-between mt-2">
+
+                            <div className="pt-2">
+                                <div className="d-flex justify-content-between mt-2">
                                     <h5>Total</h5>
-                                    <h5>$160</h5>
+                                    <h5>
+                                        <FaRupeeSign />
+                                        {Number(total) > 0 ? Number(total) : 0} 
+                                    </h5>
+
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-5">
-                            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Payment</span></h5>
-                            <div class="bg-light p-30">
-                                <div class="form-group">
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" class="custom-control-input" name="payment" id="paypal"/>
-                                            <label class="custom-control-label" for="paypal">Paypal</label>
+                        <div className="mb-5">
+                            <h5 className="section-title position-relative text-uppercase mb-3"><span className="bg-secondary pr-3">Payment</span></h5>
+                            <div className="bg-light p-30">
+                                <div className="form-group">
+                                    <div className="custom-control custom-radio">
+                                        <input
+                                            type="radio"
+                                            className="custom-control-input"
+                                            name="payment"
+                                            value={'paypal'}
+                                            id="paypal"
+                                            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                                            disabled={!billingMethod}
+
+                                        />
+                                        <label className="custom-control-label" htmlFor="paypal">Paypal</label>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" class="custom-control-input" name="payment" id="directcheck"/>
-                                            <label class="custom-control-label" for="directcheck">Direct Check</label>
+                                <div className="form-group">
+                                    <div className="custom-control custom-radio">
+                                        <input
+                                            type="radio"
+                                            value={'razorpay'}
+                                            className="custom-control-input"
+                                            name="payment"
+                                            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                                            id="directcheck"
+                                            disabled={!billingMethod}
+
+                                        />
+                                        <label className="custom-control-label" htmlFor="directcheck">Rezorpay</label>
                                     </div>
                                 </div>
-                                <div class="form-group mb-4">
-                                    <div class="custom-control custom-radio">
-                                        <input type="radio" class="custom-control-input" name="payment" id="banktransfer"/>
-                                            <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
-                                    </div>
-                                </div>
-                                <button class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
+                                <button
+                                    className="btn btn-block btn-primary font-weight-bold py-3"
+                                    disabled={cart?.length <= 0}
+                                    onClick={handlePlaceOrder}
+                                >
+                                    Place Order
+                                </button>
+
                             </div>
                         </div>
                     </div>
@@ -198,7 +294,7 @@ const Checkout = () => {
             </div>
 
         </>
-    )
-}
+    );
+};
 
-export default Checkout
+export default Checkout;
