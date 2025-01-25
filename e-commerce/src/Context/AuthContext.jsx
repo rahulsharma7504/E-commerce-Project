@@ -15,10 +15,10 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component
 export const AuthProvider = ({ children }) => {
-  const {fetchCartItemsByProductId} = useUserApiContext();
+  const {fetchCartItemsByProductId, fetchUserProfile,fetchProfileOrders, fetchprofileReviews} = useUserApiContext();
   const { readCategories } = useCategory()
   const { getProducts, fetchUsers, fetchVendors } = useProduct();
-  const { getVendorProducts } = useVendorProduct();
+  const { getVendorProducts,vendorAnalytics ,vendorAllOrders, vendorAllSales } = useVendorProduct();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);  // Loading is initially true
   const navigate = useNavigate();
@@ -39,6 +39,9 @@ export const AuthProvider = ({ children }) => {
           navigate('/vendor');
           await getVendorProducts();  // Fetch products for vendor
           await readCategories(); // Read categories
+          await vendorAnalytics();
+          await vendorAllOrders(); // Fetch vendor's all orders
+          await vendorAllSales(); // Fetch vendor's all sales
         } else if (response.data.role === 'admin') {
           navigate('/admin');
           // Fetch admin-related data after successful login
@@ -48,6 +51,9 @@ export const AuthProvider = ({ children }) => {
           await readCategories();
         } else {
           navigate('/');
+          await fetchUserProfile();
+          await fetchProfileOrders();
+          await fetchprofileReviews(); // Fetch user's reviews
           await fetchCartItemsByProductId();
 
         }

@@ -10,8 +10,11 @@ const ProductManageContext = createContext();
 
 // Provider component
 export const VendorProductProvider = ({ children }) => {
-    const {readCategories}=useCategory()
+    const { readCategories } = useCategory()
+    const [analyticsData, setAnalyticsData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [allOrders, setAllOrders] = useState(null);
+    const [allSales, setAllSales] = useState(null);
     const [products, setProducts] = useState([]);
 
     var vendorId = JSON.parse(localStorage.getItem('user'))?._id;
@@ -70,7 +73,7 @@ export const VendorProductProvider = ({ children }) => {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/product/${vendorId}`, { withCredentials: true });
             if (response.status === 200) {
                 setProducts(response.data)
-                setLoading(false);  
+                setLoading(false);
             }
         }
         catch (err) {
@@ -137,21 +140,94 @@ export const VendorProductProvider = ({ children }) => {
         }
     };
 
+    const vendorAnalytics = async () => {
+        try {
+            setLoading(true);
+            // Correct way to pass vendorId as query parameter
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/analytics`, {
+                params: { vendorId }, // vendorId ko query parameter ke roop mein bheje
+                withCredentials: true
+            });
+            if (res.status === 200) {
+                setAnalyticsData(res.data);
+            }
+        } catch (error) {
+            console.error(error); // Detailed log
+            if (error.response) {
+                toast.error(error.response?.data?.message || "API call failed");
+            } else {
+                toast.error("Network error or no response from server");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
 
-    useEffect(async() => {
 
+    // Api For Vednor Al Orders
+
+    const vendorAllOrders = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/all-orders`, {
+                params: { vendorId }, // vendorId ko query parameter ke roop mein bheje
+                withCredentials: true
+            });
+            if (res.status === 200) {
+                setAllOrders(res.data.data);
+            }
+        } catch (error) {
+            console.error(error); // Detailed log
+            if (error.response) {
+                toast.error(error.response?.data?.message || "API call failed");
+            } else {
+                toast.error("Network error or no response from server");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+    const vendorAllSales = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/all-sales`, {
+                params: { vendorId }, // vendorId ko query parameter ke roop mein bheje
+                withCredentials: true
+            });
+            if (res.status === 200) {
+                setAllSales(res.data);
+            }
+        } catch (error) {
+            console.error(error); // Detailed log
+            if (error.response) {
+                toast.error(error.response?.data?.message || "API call failed");
+            } else {
+                toast.error("Network error or no response from server");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+    useEffect(async () => {
         if (localStorage.getItem('user')) {
             const storedUser = JSON.parse(localStorage.getItem('user'));
             if (storedUser.role === 'vendor') {
-               await readCategories();
-               await getVendorProducts();
+                await readCategories();
+                await getVendorProducts();
+                await vendorAnalytics();
+                await vendorAllOrders();
+                await vendorAllSales();
 
             }
-          }
+        }
     }, [])
     return (
         <ProductManageContext.Provider
-            value={{ products, setProducts,getVendorProducts, addProduct, loading, editProduct, deleteProduct }}>
+            value={{ products, setProducts, allSales,getVendorProducts, vendorAllOrders, allOrders, vendorAnalytics, analyticsData, addProduct, loading, editProduct, deleteProduct }}>
             {children}
         </ProductManageContext.Provider>
     );

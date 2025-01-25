@@ -10,11 +10,18 @@ app.use(body_parser.urlencoded({extended:true}));
 app.use(express.json())
 // Use CORS for Client Side Requests
 app.use(cookieParser());
-app.use(CORS({
-    origin: 'http://localhost:3000',
-    credentials: true  // needed for cookies to work over HTTPS
- 
+
+const cors = require('cors');
+
+app.use(cors({
+    origin: 'http://localhost:3000',  // Your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow methods
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Allow custom headers
+    credentials: true,  // If you're using cookies or sessions
 }));
+
+app.options('*', cors());  // This handles OPTIONS requests for all routes
+
 app.use(express.json());
  
 // Connect-To-DB

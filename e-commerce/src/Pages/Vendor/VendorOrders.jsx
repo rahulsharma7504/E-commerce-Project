@@ -2,16 +2,13 @@ import React, { useState } from "react";
 import { FaSearch, FaTruck, FaCheckCircle, FaHourglassHalf } from "react-icons/fa";
 import styles from "../../Styles/VendorCSS/VendorOrders.module.css";
 
+import { useVendorProduct } from '../../Context/VendorContext/VendorProductContext';
+import LoadingPage from "../../Components/Loading/Loading";
 
 const OrdersPage = () => {
+  const { allOrders ,loading} = useVendorProduct();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const orders = [
-    { id: "#12345", customer: "John Doe", status: "Pending", date: "2024-01-01" },
-    { id: "#12346", customer: "Jane Smith", status: "Shipped", date: "2024-01-02" },
-    { id: "#12347", customer: "Sam Wilson", status: "Delivered", date: "2024-01-03" },
-  ];
 
   const openModal = (order) => {
     setSelectedOrder(order);
@@ -24,23 +21,21 @@ const OrdersPage = () => {
   };
 
   return (
+<>
+    {loading && <LoadingPage/>}
+
     <div className={styles.ordersContainer}>
       <h1 className={styles.title}>Orders Management</h1>
       <div className={styles.summary}>
         <div className={styles.summaryCard}>
           <FaHourglassHalf className={styles.icon} />
           <h2>Pending Orders</h2>
-          <p>12</p>
-        </div>
-        <div className={styles.summaryCard}>
-          <FaTruck className={styles.icon} />
-          <h2>Shipped Orders</h2>
-          <p>8</p>
+          <p>{allOrders?.totalPendingOrders || 0}</p>
         </div>
         <div className={styles.summaryCard}>
           <FaCheckCircle className={styles.icon} />
-          <h2>Delivered Orders</h2>
-          <p>15</p>
+          <h2>Completed Orders</h2>
+          <p>{allOrders?.totalCompletedOrders || 0}</p>
         </div>
       </div>
       <div className={styles.searchContainer}>
@@ -62,22 +57,20 @@ const OrdersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.customer}</td>
+          {allOrders?.orders?.map((order) => (
+            <tr key={order.orderId}>
+              <td>{order.orderId}</td>
+              <td>{order.userName}</td>
               <td
                 className={
-                  order.status === "Pending"
+                  order.status === "pending"
                     ? styles.statusPending
-                    : order.status === "Shipped"
-                    ? styles.statusShipped
-                    : styles.statusDelivered
+                    : styles.statusCompleted
                 }
               >
-                {order.status}
+                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </td>
-              <td>{order.date}</td>
+              <td>{new Date(order.date).toLocaleDateString()}</td>
               <td>
                 <button
                   className={styles.actionButton}
@@ -95,10 +88,20 @@ const OrdersPage = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <h2>Order Details</h2>
-            <p><strong>Order ID:</strong> {selectedOrder.id}</p>
-            <p><strong>Customer:</strong> {selectedOrder.customer}</p>
+            <p><strong>Order ID:</strong> {selectedOrder.orderId}</p>
+            <p><strong>Customer:</strong> {selectedOrder.userName}</p>
             <p><strong>Status:</strong> {selectedOrder.status}</p>
-            <p><strong>Date:</strong> {selectedOrder.date}</p>
+            <p><strong>Date:</strong> {new Date(selectedOrder.date).toLocaleDateString()}</p>
+            <h3>Items:</h3>
+            <ul>
+              {selectedOrder.items.map((item, index) => (
+                <li key={index}>
+                  <strong>Product ID:</strong> {item.productId},{" "}
+                  <strong>Quantity:</strong> {item.quantity},{" "}
+                  <strong>Price:</strong> ${item.price}
+                </li>
+              ))}
+            </ul>
             <button className={styles.closeButton} onClick={closeModal}>
               Close
             </button>
@@ -106,7 +109,9 @@ const OrdersPage = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
+
 
 export default OrdersPage;

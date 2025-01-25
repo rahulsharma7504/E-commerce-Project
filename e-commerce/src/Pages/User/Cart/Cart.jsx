@@ -37,37 +37,48 @@ const Cart = () => {
                                 </tr>
                             </thead>
                             <tbody className="align-middle">
-                                {cart?.items.map((item, index) => {
-                                    const product = item.product;
-                                    const totalItemPrice = product.price * item.quantity; // Calculate total for this item
-                                    return (
-                                        <tr key={index}>
-                                            <td className="align-middle">
+                                {
+                                    cart ? (
+                                        <>
+                                            {cart?.items.map((item, index) => {
+                                                const product = item.product;
+                                                const totalItemPrice = product.price * item.quantity; // Calculate total for this item
+                                                return (
+                                                    <tr key={index}>
+                                                        <td className="align-middle">
 
-                                                {product.name.slice(0, 20) + ' ...'}
-                                            </td>
-                                            <td className="align-middle"><FaRupeeSign />{product.price}</td>
-                                            <td className="align-middle">
-                                                <div className="input-group quantity mx-auto" style={{ width: "100px" }}>
+                                                            {product.name.slice(0, 20) + ' ...'}
+                                                        </td>
+                                                        <td className="align-middle"><FaRupeeSign />{product.price}</td>
+                                                        <td className="align-middle">
+                                                            <div className="input-group quantity mx-auto" style={{ width: "100px" }}>
 
-                                                    <input
-                                                        type="text"
-                                                        className="form-control form-control-sm bg-secondary border-0 text-center"
-                                                        value={item.quantity} // Display the cart quantity
-                                                        readOnly
-                                                    />
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm bg-secondary border-0 text-center"
+                                                                    value={item.quantity} // Display the cart quantity
+                                                                    readOnly
+                                                                />
 
-                                                </div>
-                                            </td>
-                                            <td className="align-middle"><FaRupeeSign />{totalItemPrice}</td>
-                                            <td className="align-middle">
-                                                <button className="btn btn-sm btn-danger" onClick={() => deleteItemFromCart(item.product._id)}>
-                                                    <i className="fa fa-times"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                                            </div>
+                                                        </td>
+                                                        <td className="align-middle"><FaRupeeSign />{totalItemPrice}</td>
+                                                        <td className="align-middle">
+                                                            <button className="btn btn-sm btn-danger" onClick={() => deleteItemFromCart(item.product._id)}>
+                                                                <i className="fa fa-times"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <h4>No Item In Cart ☹️☹️</h4>
+                                        </>
+                                    )
+                                }
+
                             </tbody>
                         </table>
                     </div>
@@ -95,7 +106,7 @@ const Cart = () => {
                             <div className="pt-2">
                                 <div className="d-flex justify-content-between mt-2">
                                     <h5>Total</h5>
-                                    <h5><FaRupeeSign />{cart?.totalPrice + 10}</h5>
+                                    <h5><FaRupeeSign />{Number(cart?.totalPrice) + 10} </h5>
                                 </div>
                                 <button
                                     className="btn btn-block btn-primary font-weight-bold my-3 py-3"
