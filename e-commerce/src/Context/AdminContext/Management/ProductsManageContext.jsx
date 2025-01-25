@@ -15,6 +15,7 @@ export const useProduct = () => {
 // ProductProvider component to provide product data and functions to the app
 export const ProductProvider = ({ children }) => {
   const { readCategories } = useCategory();
+  
   const { fetchVendors } = useVendor();
   const { fetchUsers } = useUsers();
   const [products, setProducts] = useState([]);

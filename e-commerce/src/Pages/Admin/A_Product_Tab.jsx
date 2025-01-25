@@ -21,7 +21,8 @@ const ProductsPage = () => {
     let filtered = products;
 
     if (filteredCategory) {
-      filtered = filtered.filter(product => product.category === filteredCategory);
+      // Ensure to filter using _id to match the category of the product
+      filtered = filtered.filter(product => product.category._id === filteredCategory);
     }
 
     if (searchTerm) {
@@ -55,8 +56,8 @@ const ProductsPage = () => {
 
             <Dropdown.Menu>
               {categories && categories.map(category => (
-                <Dropdown.Item key={category._id} onClick={() => setFilteredCategory(category.name)}>
-                  {category.name}
+                <Dropdown.Item key={category._id} onClick={() => setFilteredCategory(category._id)}>
+                  {category.name} {/* Set the category name here */}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
@@ -88,7 +89,7 @@ const ProductsPage = () => {
                       <tr key={product._id}>
                         <td>{index + 1}</td>
                         <td>{product.name}</td>
-                        <td>{product?.category?.name}</td> {/* Safely access the category name */}
+                        <td>{product.category.name}</td> {/* Display the category name */}
                         <td>${product.price}</td>
                         <td>{product.color}</td>
                         <td>
@@ -108,5 +109,8 @@ const ProductsPage = () => {
     </Container>
   );
 };
+
+
+
 
 export default ProductsPage;

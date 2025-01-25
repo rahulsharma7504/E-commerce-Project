@@ -19,7 +19,7 @@ const Footer = () => {
           {/* Quick Links Section */}
           <Col md={4} className="mb-3 mb-md-0">
             <h5 className={styles.footerTitle}>Quick Links</h5>
-            <Nav className="flex-column">
+            <Nav className={styles.footerLinks}> {/* Apply the class here for flex-column effect */}
               <Nav.Link href="/admin" className={styles.footerLink}>Dashboard</Nav.Link>
               <Nav.Link href="/admin-orders" className={styles.footerLink}>Orders</Nav.Link>
               <Nav.Link href="/admin-products" className={styles.footerLink}>Products</Nav.Link>
