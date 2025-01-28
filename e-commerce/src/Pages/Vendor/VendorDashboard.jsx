@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContaine
 import styles from "../../Styles/VendorCSS/vendorDashboard.module.css";
 import stylesa from "../../Styles/VendorCSS/Analystics.module.css";
 import { useVendorProduct } from '../../Context/VendorContext/VendorProductContext';
+import LoadingPage from '../../Components/Loading/Loading';
 const SalesPerformance = ({ salesData }) => {
   // Graph Data Preparation
   const labels = salesData.map((data) => new Date(data.createdAt).toLocaleDateString());
@@ -30,13 +31,15 @@ const SalesPerformance = ({ salesData }) => {
 };
 
 const VendorDashboard = () => {
-  const { products, analyticsData , allOrders} = useVendorProduct();
+  const { products, analyticsData , allOrders, loading} = useVendorProduct();
   const graphData = [
     { name: "Total Revenue", value: analyticsData?.analytics?.totalRevenue || 0 },
     { name: "Total Sales", value: analyticsData?.analytics?.totalSales || 0 },
     { name: "Products Sold", value: analyticsData?.analytics?.totalProductsSold || 0 },
   ];
   return (
+    <>
+    {loading && <LoadingPage/>}
     <Container fluid className={styles.dashboardContainer}>
     {/* Stats Cards */}
     <Row>
@@ -144,6 +147,7 @@ const VendorDashboard = () => {
       </Col>
     </Row>
   </Container>
+  </>
   
   );
 };

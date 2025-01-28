@@ -17,7 +17,7 @@ export const VendorProductProvider = ({ children }) => {
     const [allSales, setAllSales] = useState(null);
     const [products, setProducts] = useState([]);
 
-    var vendorId = JSON.parse(localStorage.getItem('user'))?._id;
+    const vendorId = JSON.parse(localStorage.getItem('user'))?._id;
 
     // Function to add a new product
     const addProduct = async (product) => {
@@ -66,7 +66,7 @@ export const VendorProductProvider = ({ children }) => {
 
 
     // Read Products (Get all products)
-    const getVendorProducts = async () => {
+    const getVendorProducts = async (vendorId) => {
         try {
             setLoading(true);
             // Replace with your API call or data fetching logic
@@ -140,7 +140,7 @@ export const VendorProductProvider = ({ children }) => {
         }
     };
 
-    const vendorAnalytics = async () => {
+    const vendorAnalytics = async (vendorId) => {
         try {
             setLoading(true);
             // Correct way to pass vendorId as query parameter
@@ -166,7 +166,7 @@ export const VendorProductProvider = ({ children }) => {
 
     // Api For Vednor Al Orders
 
-    const vendorAllOrders = async () => {
+    const vendorAllOrders = async (vendorId) => {
         try {
             setLoading(true);
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/all-orders`, {
@@ -189,7 +189,7 @@ export const VendorProductProvider = ({ children }) => {
     }
 
 
-    const vendorAllSales = async () => {
+    const vendorAllSales = async (vendorId) => {
         try {
             setLoading(true);
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/all-sales`, {
@@ -212,22 +212,34 @@ export const VendorProductProvider = ({ children }) => {
     }
 
 
-    useEffect(async () => {
+
+    const VendorData = async () => {
         if (localStorage.getItem('user')) {
             const storedUser = JSON.parse(localStorage.getItem('user'));
             if (storedUser.role === 'vendor') {
-                await readCategories();
-                await getVendorProducts();
-                await vendorAnalytics();
-                await vendorAllOrders();
-                await vendorAllSales();
-
+                try {
+                    await Promise.all([
+                        readCategories(storedUser._id),
+                        getVendorProducts(storedUser._id),
+                        vendorAnalytics(storedUser._id),
+                        vendorAllOrders(storedUser._id),
+                        vendorAllSales(storedUser._id)
+                    ]);
+                    console.log("All vendor data fetched successfully");
+                } catch (error) {
+                    console.error("Error fetching vendor data:", error);
+                }
             }
         }
-    }, [])
+    };
+
+    useEffect(() => {
+        VendorData();
+    }, []);
+
     return (
         <ProductManageContext.Provider
-            value={{ products, setProducts, allSales,getVendorProducts, vendorAllOrders, allOrders, vendorAnalytics, analyticsData, addProduct, loading, editProduct, deleteProduct }}>
+            value={{ products, setProducts, allSales, vendorAllSales, getVendorProducts, vendorAllOrders, allOrders, vendorAnalytics, analyticsData, addProduct, loading, editProduct, deleteProduct }}>
             {children}
         </ProductManageContext.Provider>
     );

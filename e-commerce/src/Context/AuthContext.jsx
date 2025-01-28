@@ -15,10 +15,10 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component
 export const AuthProvider = ({ children }) => {
-  const {fetchCartItemsByProductId, fetchUserProfile,fetchProfileOrders, fetchprofileReviews} = useUserApiContext();
+  const { fetchCartItemsByProductId, fetchUserProfile, fetchProfileOrders, fetchprofileReviews, globalUser, setGlobalUser } = useUserApiContext();
   const { readCategories } = useCategory()
   const { getProducts, fetchUsers, fetchVendors } = useProduct();
-  const { getVendorProducts,vendorAnalytics ,vendorAllOrders, vendorAllSales } = useVendorProduct();
+  const { getVendorProducts, vendorAnalytics, vendorAllOrders, vendorAllSales } = useVendorProduct();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);  // Loading is initially true
   const navigate = useNavigate();
@@ -33,15 +33,23 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data) {
         setUser(response.data);
+        setGlobalUser(response.data)
         localStorage.setItem('user', JSON.stringify(response.data)); // Store user data in localStorage
 
         if (response.data.role === 'vendor') {
           navigate('/vendor');
-          await getVendorProducts();  // Fetch products for vendor
-          await readCategories(); // Read categories
-          await vendorAnalytics();
-          await vendorAllOrders(); // Fetch vendor's all orders
-          await vendorAllSales(); // Fetch vendor's all sales
+          const vendorId = JSON.parse(localStorage.getItem('user'))?._id;
+
+          setTimeout(async () => {
+            await Promise.allSettled([
+              getVendorProducts(vendorId),  // Fetch products for vendor
+              readCategories(vendorId), // Read categories
+              vendorAnalytics(vendorId),
+              vendorAllOrders(vendorId), // Fetch vendor's all orders
+              vendorAllSales(vendorId)// Fetch vendor's all sales
+            ]);
+          }, 100);
+
         } else if (response.data.role === 'admin') {
           navigate('/admin');
           // Fetch admin-related data after successful login

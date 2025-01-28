@@ -8,6 +8,7 @@ const UserApiContext = createContext();
 // Create a Provider component
 const UserApiProvider = ({ children }) => {
     const [orders, setOrders] = useState([]);
+    const [globalUser, setGlobalUser] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [user, setUser] = useState(null)
     const [isBillingSaved, setIsBillingSaved] = useState(null);
@@ -280,7 +281,9 @@ const UserApiProvider = ({ children }) => {
         selectedPaymentMethod,
         handlePlaceOrder,
         deleteItemFromCart,
-        fetchCartItemsByProductId
+        fetchCartItemsByProductId,
+        globalUser,
+        setGlobalUser
     }
 
     return (

@@ -955,7 +955,7 @@ module.exports = {
     ForgotPassword,
     Logout,
     UserProfile,
-    updateProfile,
+    updateProfile, 
     addReview,
     getReview,
     updateReview,

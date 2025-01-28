@@ -380,7 +380,6 @@ const getVendorAllSales = async (req, res) => {
             return res.status(404).json({ error: "Vendor not found" });
         }
         const vendorId = vendorData[0]._id;
-
         const totalRevenueData = await orderModel.aggregate([
             { $unwind: "$items" },  // Unwind items array
             {
