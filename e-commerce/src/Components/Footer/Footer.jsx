@@ -4,7 +4,7 @@ import { FaAngleDoubleUp, FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 
 const Footer = () => {
   return (
     <>
-      <div className="container-fluid bg-dark text-secondary mt-5 pt-5">
+      <div className="container-fluid bg-dark text-secondary">
         <div className="row px-xl-5 pt-5">
           <div className="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
             <h5 className="text-secondary text-uppercase mb-4">Get In Touch</h5>

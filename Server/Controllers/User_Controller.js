@@ -117,9 +117,9 @@ const ForgotPassword = async (req, res) => {
     }
 }
 
-const ResetPassword = async (req, res) => {
+const ResetPassword = async (req, res) => { 
     try {
-        const { tokne, newPassword } = req.body;
+        const { token, newPassword } = req.body;
 
         // Find the user with the reset token and check if the token is valid
         const user = userDB.find({ token: token });
