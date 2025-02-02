@@ -6,8 +6,11 @@ const jwt = require('jsonwebtoken');
 const CategoryModel = require('../Models/categoryModel');
 const ProductModel = require('../Models/productModel');
 const path = require('path');
+const moment=require('moment')
 
 const ReviewModel = require('../Models/reviewsModel');
+const productModel = require('../Models/productModel');
+const orderModel = require('../Models/orderModel');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -485,6 +488,58 @@ const updateProfile = async (req, res) => {
 }
 
 
+const DashboardStats=async(req,res)=>{
+    try {
+        // Total Sales
+        const products = await productModel.find();
+        let totalSales = 0;
+        products.forEach(product => {
+            totalSales += product.price * product.stockQuantity; // Assuming stockQuantity as total sold amount
+        });
+
+        // Total Pending Orders
+        const pendingOrders = await orderModel.find({ paymentStatus: 'pending' });
+
+        // Total Orders with User details
+        const orders = await orderModel.find().populate('userId', 'name').populate('items.productId', 'name price');
+        const orderDetails = orders.map(order => ({
+            orderId: order._id,
+            userName: order.userId.name,
+            orderStatus: order.orderStatus,
+            date: order.createdAt,
+            totalAmount: order.totalAmount
+        }));
+
+        // Last 1 Month Activities
+        const oneMonthAgo = moment().subtract(1, 'months').toDate();
+        
+        // New Users
+        const newUsers = await userDB.find({ createdAt: { $gte: oneMonthAgo } });
+
+        // New Products
+        const newProducts = await productModel.find({ createdAt: { $gte: oneMonthAgo } });
+
+        // New Orders
+        const newOrders = await orderModel.find({ createdAt: { $gte: oneMonthAgo } });
+
+        // New Vendors
+        const newVendors = await vendorDB.find({ createdAt: { $gte: oneMonthAgo } });
+
+        // Return all the stats
+        res.status(200).json({
+            totalSales,
+            totalPendingOrders: pendingOrders.length,
+            orders: orderDetails,
+            newUsers: newUsers.length,
+            newProducts: newProducts.length,
+            newOrders: newOrders.length,
+            newVendors: newVendors.length
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createVendor,
     getAllUsers,
@@ -500,7 +555,8 @@ module.exports = {
     AllProduct,
     UpdateProduct,
     DeleteProduct,
-    updateProfile
+    updateProfile,
+    DashboardStats
 }
 
 

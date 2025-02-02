@@ -50,5 +50,7 @@ adminRoutes.delete('/product/:productId', Secure, roleSecure(['admin']), uploadM
 
 adminRoutes.put('/update-profile', Secure, roleSecure(['admin']), Admin_Controller.updateProfile)
 
+adminRoutes.get('/dashboard-stats', Secure, roleSecure(['admin']), Admin_Controller.DashboardStats)
+
 
 module.exports = { adminRoutes }

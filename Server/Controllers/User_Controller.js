@@ -50,21 +50,28 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
     try {
+        console.time('loginProcess'); // Start profiling
+
         const { email, password } = req.body;
         console.log(email, password);
 
         // Find user with indexed query
-        const user = await userDB.findOne({ email }).exec(); // .exec() for better query optimization
+        console.time('findUser'); // Start profiling for DB query
+        const user = await userDB.findOne({ email }).exec();
+        console.timeEnd('findUser'); // End profiling for DB query
 
         if (!user) {
             return res.status(401).send({ message: 'User does not exist' });
         }
         if (user.status === 'inActive') {
             return res.status(400).json({ message: "Your Account is Not Active" });
-        }
+        } 
 
         // Compare password
+        console.time('comparePassword'); // Start profiling for bcrypt compare
         const passwordMatch = await bcrypt.compare(password, user.password);
+        console.timeEnd('comparePassword'); // End profiling for bcrypt compare
+
         if (!passwordMatch) {
             return res.status(400).json({ message: 'Invalid password' });
         }
@@ -81,6 +88,8 @@ const Login = async (req, res) => {
             maxAge: 14 * 24 * 60 * 60 * 1000, // 2 weeks
         });
 
+        console.timeEnd('loginProcess'); // End profiling for the whole process
+
         // Send success response
         return res.status(200).json({ message: "Login successful", token });
     } catch (error) {
@@ -88,6 +97,7 @@ const Login = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
 
 const ForgotPassword = async (req, res) => {
     try {
@@ -116,7 +126,7 @@ const ForgotPassword = async (req, res) => {
 
     }
 }
-
+ 
 const ResetPassword = async (req, res) => { 
     try {
         const { token, newPassword } = req.body;
