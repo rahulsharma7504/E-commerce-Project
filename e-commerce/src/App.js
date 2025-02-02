@@ -28,7 +28,7 @@ import AdminSettings from './Pages/Admin/AdminSettings';
 import AdminUsers from './Pages/Admin/AdminUsers';
 import AdminVendors from './Pages/Admin/AdminVendors';
 import AdminCategory from './Pages/Admin/AdminCategory';
-
+import { AdminDashBoardProvider } from './Context/AdminContext/DashboardStats';
 
 // Vendor Side Files
 
@@ -61,6 +61,8 @@ function App() {
             <UserProvider>
               <CategoryProvider>
                 <VendorProductProvider>
+                <AdminDashBoardProvider>
+
                   <ProductProvider>
                     <AuthProvider>
                       <Layout>
@@ -106,6 +108,7 @@ function App() {
                       </Layout>
                     </AuthProvider>
                   </ProductProvider>
+                  </AdminDashBoardProvider>
                 </VendorProductProvider>
               </CategoryProvider>
             </UserProvider>

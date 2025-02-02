@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useUsers } from './UserManageContext';
 import { useVendor } from './VendorManageContext';
 import { useCategory } from '../CategoryManageContext';
+import { useAdminDashBoard } from '../DashboardStats';
 // Create the Product Context
 const ProductContext = createContext();
 
@@ -14,6 +15,8 @@ export const useProduct = () => {
 
 // ProductProvider component to provide product data and functions to the app
 export const ProductProvider = ({ children }) => {
+  const {fetchAdminStats}=useAdminDashBoard();
+
   const { readCategories } = useCategory();
   
   const { fetchVendors } = useVendor();
@@ -97,6 +100,7 @@ export const ProductProvider = ({ children }) => {
         await fetchUsers();
         await fetchVendors();
         await readCategories();
+        await fetchAdminStats(); // Fetch admin dashboard statistics after successful login
       }
     }
 

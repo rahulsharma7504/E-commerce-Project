@@ -5,7 +5,9 @@ import styles from '../../Styles/AdminCSS/AdminDashboard.module.css'; // Import 
 
 import { useUsers } from '../../Context/AdminContext/Management/UserManageContext';
 import { useVendor } from '../../Context/AdminContext/Management/VendorManageContext';
+import { useAdminDashBoard } from '../../Context/AdminContext/DashboardStats';
 const Admin = () => {
+  const { fetchAdminStats, adminStats } = useAdminDashBoard();
 
   const { users } = useUsers();
   const { vendors } = useVendor();
@@ -13,8 +15,8 @@ const Admin = () => {
 
   return (
     <Container fluid className={styles.dashboardContainer}>
+      {/* Overview Section */}
       <Row className="mb-4">
-        {/* Overview Section */}
         <Col lg={3} sm={6} className="mb-4">
           <Card className={styles.card}>
             <Card.Body>
@@ -22,7 +24,7 @@ const Admin = () => {
                 <FaUser />
               </div>
               <Card.Title>Total Users</Card.Title>
-              <Card.Text className={styles.cardText}>{users.length}</Card.Text>
+              <Card.Text className={styles.cardText}>{adminStats?.newUsers}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -34,7 +36,7 @@ const Admin = () => {
                 <FaStore />
               </div>
               <Card.Title>Total Vendors</Card.Title>
-              <Card.Text className={styles.cardText}>{vendors.length}</Card.Text>
+              <Card.Text className={styles.cardText}>{adminStats?.newVendors}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -46,7 +48,7 @@ const Admin = () => {
                 <FaDollarSign />
               </div>
               <Card.Title>Total Sales</Card.Title>
-              <Card.Text className={styles.cardText}>$50,000</Card.Text>
+              <Card.Text className={styles.cardText}>${adminStats?.totalSales}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -58,7 +60,7 @@ const Admin = () => {
                 <FaClipboardList />
               </div>
               <Card.Title>Pending Orders</Card.Title>
-              <Card.Text className={styles.cardText}>87</Card.Text>
+              <Card.Text className={styles.cardText}>{adminStats?.totalPendingOrders}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -71,7 +73,6 @@ const Admin = () => {
             <Card.Body>
               <Card.Title>Sales Analytics</Card.Title>
               <div className={styles.chartContainer}>
-                {/* A sample bar chart or sales chart could go here */}
                 <FaChartLine className={styles.chartIcon} />
                 <ProgressBar animated now={75} label="75%" variant="success" />
               </div>
@@ -84,10 +85,17 @@ const Admin = () => {
             <Card.Body>
               <Card.Title>Recent Activity</Card.Title>
               <ul className={styles.activityList}>
-                <li>New user registered: John Doe</li>
-                <li>New product added: Wireless Headphones</li>
-                <li>Order #1234 shipped</li>
-                <li>Vendor registration approved: VendorX</li>
+                {/* Dynamically render recent activities */}
+                {adminStats?.orders.map((order, index) => (
+                  <li key={index}>
+                    Order #{order.orderId} - Status: {order.orderStatus} - Amount: ${order.totalAmount}
+                  </li>
+                ))}
+                {/* Add other recent activities if needed */}
+                <li>New user registered: {adminStats?.newUsers} users</li>
+                <li>New product added: {adminStats?.newProducts} products</li>
+                <li>New orders placed: {adminStats?.newOrders} orders</li>
+                <li>New vendors: {adminStats?.newVendors} vendors</li>
               </ul>
             </Card.Body>
           </Card>

@@ -7,6 +7,7 @@ import { useVendorProduct } from './VendorContext/VendorProductContext';
 import { useProduct } from './AdminContext/Management/ProductsManageContext';
 import { useCategory } from './AdminContext/CategoryManageContext';
 import { useUserApiContext } from './UserContext/UserApiContext';
+import { useAdminDashBoard } from './AdminContext/DashboardStats';
 // Create context
 export const AuthContext = createContext();
 
@@ -15,6 +16,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // Provider component
 export const AuthProvider = ({ children }) => {
+  const { fetchAdminStats } = useAdminDashBoard();
   const { fetchCartItemsByProductId, fetchUserProfile, fetchProfileOrders, fetchprofileReviews, globalUser, setGlobalUser } = useUserApiContext();
   const { readCategories } = useCategory()
   const { getProducts, fetchUsers, fetchVendors } = useProduct();
@@ -57,6 +59,7 @@ export const AuthProvider = ({ children }) => {
           await fetchUsers();
           await fetchVendors();
           await readCategories();
+          await fetchAdminStats(); // Fetch admin dashboard statistics
         } else {
           navigate('/');
           await fetchUserProfile();

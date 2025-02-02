@@ -1,25 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Dropdown, FormControl, InputGroup, Modal, Form } from 'react-bootstrap';
-import { FaSearch, FaFilter, FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa';
-import styles from '../../Styles/AdminCSS/AdminOrder.module.css'; // Import the CSS module
-
+import { FaSearch, FaFilter, FaEdit, FaTrash } from 'react-icons/fa';
+import axios from 'axios';  // Make sure axios is installed for API calls
+import styles from '../../Styles/AdminCSS/AdminOrder.module.css';  // Import the CSS module
+import { useAdminDashBoard } from '../../Context/AdminContext/DashboardStats';
 const OrdersPage = () => {
-  const [orders, setOrders] = useState([
-    { id: 1, user: 'John Smith', status: 'Pending', date: '2024-12-25', amount: '$250' },
-    { id: 2, user: 'Sarah Lee', status: 'Shipped', date: '2024-12-24', amount: '$199' },
-    { id: 3, user: 'Mike Ross', status: 'Cancelled', date: '2024-12-23', amount: '$350' },
-    { id: 4, user: 'Jessica Lee', status: 'Pending', date: '2024-12-22', amount: '$120' },
-    // Add more sample data here
-  ]);
+  const { adminStats } = useAdminDashBoard();
+  const [ordersData, setOrdersData] = useState({
+    totalSales: 0,
+    totalPendingOrders: 0,
+    orders: [],
+    newUsers: 0,
+    newProducts: 0,
+    newOrders: 0,
+    newVendors: 0,
+  });
 
   const [filteredStatus, setFilteredStatus] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [editOrder, setEditOrder] = useState({ id: '', user: '', status: '', date: '', amount: '' });
 
-  // Function to filter orders based on status
+  // Fetch API data
+  useEffect(() => {
+   if(adminStats){
+    setOrdersData(adminStats)
+   }
+  }, [adminStats]);
+
+  // Filter Orders based on status and search term
   const filterOrders = () => {
-    if (!filteredStatus) return orders;
-    return orders.filter(order => order.status === filteredStatus);
+    let filteredOrders = ordersData.orders;
+
+    // Filter by status
+    if (filteredStatus) {
+      filteredOrders = filteredOrders.filter(order => order.orderStatus === filteredStatus);
+    }
+
+    // Filter by search term (user or order ID)
+    if (searchTerm) {
+      filteredOrders = filteredOrders.filter(order => 
+        order.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        order.orderId.toString().includes(searchTerm)
+      );
+    }
+
+    return filteredOrders;
   };
 
   // Open the Edit Modal and pre-fill with order data
@@ -30,18 +56,54 @@ const OrdersPage = () => {
 
   // Handle the Edit Order submission
   const handleEditOrder = () => {
-    setOrders(orders.map(order => (order.id === editOrder.id ? editOrder : order)));
+    setOrdersData({
+      ...ordersData,
+      orders: ordersData.orders.map(order => (order.orderId === editOrder.orderId ? editOrder : order))
+    });
     setShowEditModal(false);
-    setEditOrder({ id: '', user: '', status: '', date: '', amount: '' });
+    setEditOrder({ orderId: '', userName: '', orderStatus: '', date: '', totalAmount: '' });
+  };
+
+  // Handle delete order
+  const handleDeleteOrder = (orderId) => {
+    setOrdersData({
+      ...ordersData,
+      orders: ordersData.orders.filter(order => order.orderId !== orderId)
+    });
   };
 
   return (
     <Container fluid className={styles.ordersContainer}>
       <Row className="mb-4">
-        {/* Order Filters Section */}
+        {/* Overview Section */}
+        <Col lg={3} sm={6} className="mb-4">
+          <Card className={styles.card}>
+            <Card.Body>
+              <Card.Title>Total Sales</Card.Title>
+              <Card.Text className={styles.cardText}>${ordersData.totalSales}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col lg={3} sm={6} className="mb-4">
+          <Card className={styles.card}>
+            <Card.Body>
+              <Card.Title>Total Pending Orders</Card.Title>
+              <Card.Text className={styles.cardText}>{ordersData.totalPendingOrders}</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Order Filters Section */}
+      <Row className="mb-4">
         <Col md={6} sm={12} className="mb-3">
           <InputGroup>
-            <FormControl placeholder="Search by user or order ID" />
+            <FormControl 
+              placeholder="Search by user or order ID"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <Button variant="outline-secondary">
               <FaSearch />
             </Button>
@@ -54,9 +116,10 @@ const OrdersPage = () => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredStatus('Pending')}>Pending</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredStatus('Shipped')}>Shipped</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredStatus('Cancelled')}>Cancelled</Dropdown.Item>
+              <Dropdown.Item onClick={() => setFilteredStatus('pending')}>Pending</Dropdown.Item>
+              <Dropdown.Item onClick={() => setFilteredStatus('shipped')}>Shipped</Dropdown.Item>
+              <Dropdown.Item onClick={() => setFilteredStatus('cancelled')}>Cancelled</Dropdown.Item>
+              <Dropdown.Item onClick={() => setFilteredStatus('completed')}>Completed</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredStatus('')}>Clear Filter</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -82,21 +145,21 @@ const OrdersPage = () => {
                 </thead>
                 <tbody>
                   {filterOrders().map(order => (
-                    <tr key={order.id}>
-                      <td>{`#${order.id}`}</td>
-                      <td>{order.user}</td>
+                    <tr key={order.orderId}>
+                      <td>{`#${order.orderId}`}</td>
+                      <td>{order.userName}</td>
                       <td>
-                        <Button variant={order.status === 'Pending' ? 'warning' : order.status === 'Shipped' ? 'success' : 'danger'}>
-                          {order.status}
+                        <Button variant={order.orderStatus === 'pending' ? 'warning' : order.orderStatus === 'shipped' ? 'success' : 'danger'}>
+                          {order.orderStatus}
                         </Button>
                       </td>
-                      <td>{order.date}</td>
-                      <td>{order.amount}</td>
+                      <td>{new Date(order.date).toLocaleDateString()}</td>
+                      <td>${order.totalAmount}</td>
                       <td>
                         <Button variant="primary" className="me-2" onClick={() => openEditModal(order)}>
                           <FaEdit /> Edit
                         </Button>
-                        <Button variant="danger" onClick={() => setOrders(orders.filter(o => o.id !== order.id))}>
+                        <Button variant="danger" onClick={() => handleDeleteOrder(order.orderId)}>
                           <FaTrash /> Delete
                         </Button>
                       </td>
@@ -106,14 +169,6 @@ const OrdersPage = () => {
               </Table>
             </Card.Body>
           </Card>
-        </Col>
-      </Row>
-
-      {/* Pagination (this is a placeholder for future implementation) */}
-      <Row className="justify-content-center mt-4">
-        <Col md={6} className="text-center">
-          <Button variant="outline-primary" className="me-2">Previous</Button>
-          <Button variant="outline-primary">Next</Button>
         </Col>
       </Row>
 
@@ -128,8 +183,8 @@ const OrdersPage = () => {
               <Form.Label>User</Form.Label>
               <Form.Control
                 type="text"
-                value={editOrder.user}
-                onChange={(e) => setEditOrder({ ...editOrder, user: e.target.value })}
+                value={editOrder.userName}
+                onChange={(e) => setEditOrder({ ...editOrder, userName: e.target.value })}
                 disabled
               />
             </Form.Group>
@@ -138,8 +193,8 @@ const OrdersPage = () => {
               <Form.Label>Status</Form.Label>
               <Form.Control
                 as="select"
-                value={editOrder.status}
-                onChange={(e) => setEditOrder({ ...editOrder, status: e.target.value })}
+                value={editOrder.orderStatus}
+                onChange={(e) => setEditOrder({ ...editOrder, orderStatus: e.target.value })}
               >
                 <option>Pending</option>
                 <option>Shipped</option>
@@ -161,8 +216,8 @@ const OrdersPage = () => {
               <Form.Label>Amount</Form.Label>
               <Form.Control
                 type="text"
-                value={editOrder.amount}
-                onChange={(e) => setEditOrder({ ...editOrder, amount: e.target.value })}
+                value={editOrder.totalAmount}
+                onChange={(e) => setEditOrder({ ...editOrder, totalAmount: e.target.value })}
                 disabled
               />
             </Form.Group>

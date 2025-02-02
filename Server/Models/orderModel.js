@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true },
   paymentMethod: { type: String, enum: ['paypal', 'razorpay'], required: true },
   paymentStatus: { type: String, enum: ['pending', 'completed'], default: 'pending' },
-  orderStatus: { type: String, enum: ['pending', 'shipped', 'canceled '], default: 'pending' },
+  orderStatus: { type: String, enum: ['pending', 'shipped', 'cancelled', 'completed'], default: 'pending' },
   createdAt: { type: Date, default: Date.now },
 });
 
