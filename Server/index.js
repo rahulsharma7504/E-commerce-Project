@@ -14,7 +14,7 @@ app.use(cookieParser());
 const cors = require('cors');
 
 app.use(cors({
-    origin: 'http://localhost:3000',  // Your frontend URL
+    origin: 'https://e-commerce-project-client-side.onrender.com',  // Your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow methods
     allowedHeaders: ['Content-Type', 'Authorization'],  // Allow custom headers
     credentials: true,  // If you're using cookies or sessions
