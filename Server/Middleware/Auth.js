@@ -1,6 +1,6 @@
 const JWT = require('jsonwebtoken');
 
-const Secure = async (req, res, next) => {
+const  Secure = async (req, res, next) => {
     try {
         const token = req.cookies.token; // Access token directly
         if (!token) {

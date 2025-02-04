@@ -56,9 +56,7 @@ const Login = async (req, res) => {
         console.log(email, password);
 
         // Find user with indexed query
-        console.time('findUser'); // Start profiling for DB query
         const user = await userDB.findOne({ email }).exec();
-        console.timeEnd('findUser'); // End profiling for DB query
 
         if (!user) {
             return res.status(401).send({ message: 'User does not exist' });
@@ -68,9 +66,7 @@ const Login = async (req, res) => {
         } 
 
         // Compare password
-        console.time('comparePassword'); // Start profiling for bcrypt compare
         const passwordMatch = await bcrypt.compare(password, user.password);
-        console.timeEnd('comparePassword'); // End profiling for bcrypt compare
 
         if (!passwordMatch) {
             return res.status(400).json({ message: 'Invalid password' });
