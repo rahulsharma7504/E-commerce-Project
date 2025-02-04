@@ -80,7 +80,7 @@ const Login = async (req, res) => {
         // Store token in httpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // HTTPS in production
+            secure: process.env.NODE_ENV, // HTTPS in production
             maxAge: 14 * 24 * 60 * 60 * 1000, // 2 weeks
         });
 
