@@ -14,7 +14,7 @@ const BillingModel = require('../Models/BillingModel');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
-const razorpay = new Razorpay({
+const razorpay = new Razorpay({bbn
     key_id: process.env.RezorPayKey_id,
     key_secret: process.env.RezorPaySecret_id,
 });
