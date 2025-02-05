@@ -80,10 +80,11 @@ const Login = async (req, res) => {
         // Store token in httpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV, // HTTPS in production
+            secure:  process.env.NODE_ENV === 'production',
             maxAge: 14 * 24 * 60 * 60 * 1000, // 2 weeks
+            sameSite: 'None',  // Use 'None' for cross-origin requests
         });
-
+        
         console.timeEnd('loginProcess'); // End profiling for the whole process
 
         // Send success response

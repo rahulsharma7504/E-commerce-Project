@@ -12,7 +12,7 @@ const sendResetEmail = (email, resetToken) => {
       }
     });
   
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetUrl = `https://e-commerce-project-client-side.onrender.com/reset-password/${resetToken}`;
   
     const mailOptions = {
       from: 'rahul658541@gmail.com',
