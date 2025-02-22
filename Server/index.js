@@ -9,7 +9,6 @@ app.use(body_parser.json());
 app.use(body_parser.urlencoded({extended:true}));
 app.use(express.json())
 // Use CORS for Client Side Requests
-app.use(cookieParser());
 
 const cors = require('cors');
 
@@ -19,6 +18,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],  // Allow custom headers
     credentials: true,  // If you're using cookies or sessions
 }));
+app.use(cookieParser());
+
 
 app.options('*', cors());  // This handles OPTIONS requests for all routes
 
