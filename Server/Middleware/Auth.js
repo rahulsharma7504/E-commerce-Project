@@ -1,3 +1,4 @@
+const dotenv=require('dotenv').config();
 const JWT = require('jsonwebtoken');
 
 const  Secure = async (req, res, next) => {
