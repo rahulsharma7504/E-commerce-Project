@@ -18,7 +18,7 @@ const ForgetPassword = () => {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/forgot-password`,{email:email});
       if (response.status === 200) {
         setIsSuccess(true);
-        setMessage('Reset password link has been sent to your email.');
+        setMessage('✅ Reset password link has been sent to your email.');
         setEmail('');
       } 
     } catch (error) {

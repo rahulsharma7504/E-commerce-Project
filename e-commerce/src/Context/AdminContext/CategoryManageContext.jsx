@@ -18,17 +18,27 @@ export const CategoryProvider = ({ children }) => {
     // Create a new category
     const createCategory = async (category) => {
         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
+
+
             setLoading(true);
-            const res = await axios.post(`${process.env.REACT_APP_API_URL}/admin/category`, { category }, { withCredentials: true });
+            const res = await axios.post(`${process.env.REACT_APP_API_URL}/admin/category`, { category }, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
             if (res.status === 201) {
-                readCategories();
+                await readCategories();
                 toast.success('Category created successfully');
-                setLoading(false);
             }
             setLoading(false);
 
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Something went wrong');
+            setLoading(false);
 
         }
     };
@@ -36,14 +46,23 @@ export const CategoryProvider = ({ children }) => {
     // Read categories (just return the current state)
     const readCategories = async () => {
         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
             setLoading(true);
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/admin/category`, { withCredentials: true });
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/admin/category`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+            });
             setCategories(res.data);
 
             setLoading(false);
 
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Something went wrong');
+            setLoading(false);
 
         }
     };
@@ -51,11 +70,19 @@ export const CategoryProvider = ({ children }) => {
     // Update a category by ID
     const updateCategory = async (categoryId, categoryName) => {
         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
             setLoading(true);
-            const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/category`, { categoryId, categoryName }, { withCredentials: true });
+            const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/category`, { categoryId, categoryName }, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+            });
             if (res.status === 200) {
                 toast.success(res.data.message);
-                readCategories();
+                await readCategories();
             }
 
             setLoading(false);
@@ -69,11 +96,20 @@ export const CategoryProvider = ({ children }) => {
     // Delete a category by ID
     const deleteCategory = async (categoryId) => {
         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
             setLoading(true);
-            const res = await axios.delete(`${process.env.REACT_APP_API_URL}/admin/category/${categoryId}`, { withCredentials: true });
+            const res = await axios.delete(`${process.env.REACT_APP_API_URL}/admin/category/${categoryId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true 
+            });
             if (res.status === 200) {
                 toast.success(res.data.message);
-                readCategories();
+                await readCategories();
             }
 
             setLoading(false);
@@ -86,19 +122,30 @@ export const CategoryProvider = ({ children }) => {
 
     const adminSettings = async (formData) => {
         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
             setLoading(true);
-            setTimeout(async () => {
 
-                const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/update-profile`, formData, { withCredentials: true });
+                const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/update-profile`, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 if (res.status === 200) {
                     setLoading(false);
                     window.location.reload();
                     toast.success('Admin settings updated successfully');
 
+                } else {
+                    setLoading(false);
+                    toast.error('Failed to update admin settings');
                 }
-            }, 1000);
         } catch (error) {
 
+            setLoading(false);
+            toast.error(error.response?.data?.message || 'Something went wrong');
         }
         // Your admin settings update logic goes here...
     }

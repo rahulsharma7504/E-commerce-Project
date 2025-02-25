@@ -47,7 +47,7 @@ const ResetPassword = () => {
 
     } catch (error) {
       setIsSuccess(false);
-      setMessage('An error occurred. Please try again later.');
+      setMessage(error.response.data.message);
     }
   };
 

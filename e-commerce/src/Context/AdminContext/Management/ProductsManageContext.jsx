@@ -26,6 +26,11 @@ export const ProductProvider = ({ children }) => {
   // Create Product (Add new product)
   const createProduct = async (product) => {
     try {
+      // Get the token from the session storage
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        return;
+      }
       // Create a FormData object
       const formData = new FormData();
 
@@ -48,13 +53,14 @@ export const ProductProvider = ({ children }) => {
         {
           withCredentials: true,
           headers: {
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data', // Correct Content-Type for file uploads
           },
         }
       );
 
       if (res.status === 201) {
-        getProducts();
+        await getProducts();
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -65,9 +71,19 @@ export const ProductProvider = ({ children }) => {
 
   // Read Products (Get all products)
   const getProducts = async () => {
-    try {
-      // Replace with your API call or data fetching logic
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/product`, { withCredentials: true });
+    try { 
+      const token=sessionStorage.getItem('token');
+      if(!token){
+        return;
+      }
+      
+      // Fetch products from the API
+
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/product`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setProducts(response.data);
 
@@ -81,10 +97,18 @@ export const ProductProvider = ({ children }) => {
   const deleteProduct = async (productId) => {
     try {
       // Replace with your API call or data fetching logic
-      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/admin/product/${productId}`, { withCredentials: true });
+      const token=sessionStorage.getItem('token');
+      if(!token){
+        return;
+      }
+      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/admin/product/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.status === 200) {
         toast.success(response.data.message);
-        getProducts();
+        await getProducts();
 
       }
     } catch (err) {

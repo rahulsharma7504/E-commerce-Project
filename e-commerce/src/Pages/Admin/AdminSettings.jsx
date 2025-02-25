@@ -5,9 +5,9 @@ import styles from '../../Styles/AdminCSS/AdminSettings.module.css'; // Import t
 import { useCategory } from '../../Context/AdminContext/CategoryManageContext';
 
 const AdminSettingsPage = () => {
-  const {adminSettings, loading}=useCategory(); // Fetch categories on page load
+  const { adminSettings, loading } = useCategory(); // Fetch categories on page load
   const [formData, setFormData] = useState({
-    userId:null,
+    userId: null,
     name: 'Admin User',
     email: 'admin@example.com',
     currentPassword: '',
@@ -15,9 +15,9 @@ const AdminSettingsPage = () => {
     confirmPassword: '',
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem('user'));
-    if(savedData) {
+    if (savedData) {
       setFormData({
         userId: savedData._id,
         name: savedData.name,
@@ -27,7 +27,7 @@ const AdminSettingsPage = () => {
         confirmPassword: '',
       })
     }
-  },[])
+  }, [])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,12 +38,12 @@ const AdminSettingsPage = () => {
 
   };
 
-  
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    adminSettings(formData); // Save user data to local storage (optional: implement server-side storage as well)
+    await adminSettings(formData); // Save user data to local storage (optional: implement server-side storage as well)
     // Handle form submission (e.g., API call)
 
   };
@@ -129,7 +129,7 @@ const AdminSettingsPage = () => {
         </Col>
       </Row>
 
-     
+
 
       {/* Save Changes Button */}
       <Row>

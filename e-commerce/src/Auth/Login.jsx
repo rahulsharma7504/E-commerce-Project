@@ -29,8 +29,8 @@ export default function Login() {
             if (res.status === 200) {
                 toast.success('Logged in successfully');
                 setFormLoading(false)
-                
-                fetchUser(); // Assuming this function updates user data
+                sessionStorage.setItem('token', res.data.token); // Store token in sessionStorage
+                await fetchUser(res.data.token); // Pass the token to fetchUser
 
             } else {
                 toast.error('Login failed. Please try again.');
@@ -46,7 +46,7 @@ export default function Login() {
             }
 
             console.error('Login failed', error); // Log error for debugging
-        }finally{
+        } finally {
             setFormLoading(false); // Stop loading after login attempt
         }
     };
@@ -56,7 +56,7 @@ export default function Login() {
     return (
         <div className={styles.loginContainer}>
             <div className={styles.imageContainer}>
-                <img src={loginImage}  alt="Login" className={styles.loginImage} />
+                <img src={loginImage} alt="Login" className={styles.loginImage} />
             </div>
             <div className={styles.loginForm}>
                 <h1>Welcome Back!</h1>
@@ -85,7 +85,7 @@ export default function Login() {
                     />
                 </div>
 
-                <button 
+                <button
                     onClick={handleLogin}
                     disabled={formLoading || !isFormValid}
                     className={styles.loginBtn}

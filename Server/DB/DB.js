@@ -4,8 +4,12 @@ const mongoose =require('mongoose');
 
 // Connect to MongoDB 
 const ConnectDB=async()=>{
-    try {
-        mongoose.connect(process.env.DB_String);
+    try { 
+        mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            maxPoolSize: 10 // Connection pool ka size set karo
+        }); 
+        
         console.log("Database Connected")
         
     } catch (error) {

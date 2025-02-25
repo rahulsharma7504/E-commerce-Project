@@ -29,7 +29,12 @@ export const UserDataProvider = ({ children }) => {
 
     const fetchProducts = async (pageNumber) => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/shop/products/pagination?page=${pageNumber}`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/shop/products/pagination?page=${pageNumber}`,{
+            headers: {
+              
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            }
+          });
           setAllShopProducts(response.data.products);
           setCurrentPage(response.data.currentPage); // Assume API response includes totalPages
         } catch (error) {
@@ -42,7 +47,12 @@ export const UserDataProvider = ({ children }) => {
         try {
             setLoading(true);
             // Replace with your API call or data fetching logic
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/shop/products/filters?price=${filtervalue}`);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/shop/products/filters?price=${filtervalue}`,{
+              headers: {
+                
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+              }
+            });
             if (response.status === 200) {
                 setAllShopProducts(response.data);
             }
@@ -50,6 +60,7 @@ export const UserDataProvider = ({ children }) => {
            
         } catch (error) {
           console.error('Error fetching products:', error);
+          setLoading(false);
         }
       };
 
@@ -57,7 +68,12 @@ export const UserDataProvider = ({ children }) => {
         try {
             setLoading(true);
             // Replace with your API call or data fetching logic
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/shop/products/filters-color?color=${filtervalue}`);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/shop/products/filters-color?color=${filtervalue}`,{
+              headers: {
+                
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+              }
+            });
             if (response.status === 200) {
                 setAllShopProducts(response?.data);
             }
@@ -84,17 +100,21 @@ export const UserDataProvider = ({ children }) => {
 
 
 
-      const handleSearch = async (serachValue) => {
+      const handleSearch = async (searchValue) => {
         try {
           
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/shop/products/search?search=${serachValue}`); // API call with the selected sort option
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/shop/products/search?search=${searchValue}`, {
+            headers: {
+              
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            }
+          }); // API call with the selected sort option
           setAllShopProducts(response.data);  // Store the fetched sorted products
         } catch (error) {
           console.error('Error fetching sorted products:', error);
         }
       };
-
-
+      
 //  Make Rating Functions
 
 
@@ -124,7 +144,11 @@ const handleMouseLeave = () => {
 const handleProductDetailsPage = async (productId) => {
   try {
     setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/product/${productId}`); // API call with the productId
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/product/${productId}`,{
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        }
+      }); // API call with the productId
       setproductDetails(response.data.data); // Store the fetched product details
       setReletedProducts(response.data.relatedProducts);
 
@@ -162,7 +186,12 @@ const handleToAddReview = async (productID) => {
     };
 
     // Send the review to the API
-    const response = await axios.post(`http://localhost:4000/api/reviews`, formData, { withCredentials: true });
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews`, formData, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      }
+    });
 
     // Handle successful response
     if (response.status === 201) {
@@ -185,7 +214,11 @@ const handleToAddReview = async (productID) => {
 
     const shopProducts = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/shop/products`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/shop/products`,{
+                headers: {   
+                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                }
+            });
             if (response.status === 200) {
                 setAllShopProducts(response.data);
             }
@@ -196,7 +229,11 @@ const handleToAddReview = async (productID) => {
     // Function to fetch products
     const HomeProducts = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/products`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/products`,{
+                headers: {   
+                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                }
+            });
             if (response.status === 200) {
                 setAllProducts(response.data);
             }
@@ -208,7 +245,11 @@ const handleToAddReview = async (productID) => {
     // Function to fetch categories
     const HomeCategory = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/category`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/category`,{
+                headers: {   
+                  Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                }
+            });
             if (response.status === 200) {
                 setAllCategory(response?.data);
             }

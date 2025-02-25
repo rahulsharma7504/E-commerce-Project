@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 const CategoryModel = require('../Models/categoryModel');
 const ProductModel = require('../Models/productModel');
 const path = require('path');
-const moment=require('moment')
+const moment = require('moment')
+const mongoose = require('mongoose');
 
 const ReviewModel = require('../Models/reviewsModel');
 const productModel = require('../Models/productModel');
@@ -452,43 +453,48 @@ const DeleteProduct = async (req, res) => {
 const updateProfile = async (req, res) => {
     try {
         const { name, email, currentPassword, newPassword, confirmPassword, userId } = req.body;
+        console.warn(req.body.userId)
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.log('❌ Invalid ID format:', userId);
+            return res.status(400).json({ message: 'Invalid user ID format.' });
+        }
 
         const user = await userDB.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        if (currentPassword, newPassword, confirmPassword) {
-            if (newPassword && newPassword !== confirmPassword) {
+
+        // 🟢 Update name and email if provided
+        user.name = name || user.name;
+        user.email = email || user.email;
+
+        // 🔑 Handle password change
+        if (currentPassword && newPassword && confirmPassword) {
+            if (newPassword !== confirmPassword) {
                 return res.status(400).json({ message: "Passwords do not match" });
             }
-            // Check if current password matches
+
             const match = await bcrypt.compare(currentPassword, user.password);
             if (!match) {
                 return res.status(401).json({ message: "Incorrect current password" });
             }
-            // Hash the new password
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            // Update the user's password
-            user.password = hashedPassword;
+
+            user.password = await bcrypt.hash(newPassword, 10);
         }
 
-        // Update the user's name and email
-        user.name = name;
-        user.email = email;
-        // Save the updated user
+        // 💾 Save the updated user
         await user.save();
-
         res.status(200).json({ message: "User profile updated successfully" });
 
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error('❌ Update failed:', error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
+};
 
-}
 
 
-const DashboardStats=async(req,res)=>{
+const DashboardStats = async (req, res) => {
     try {
         // Total Sales
         const products = await productModel.find();
@@ -512,7 +518,7 @@ const DashboardStats=async(req,res)=>{
 
         // Last 1 Month Activities
         const oneMonthAgo = moment().subtract(1, 'months').toDate();
-        
+
         // New Users
         const newUsers = await userDB.find({ createdAt: { $gte: oneMonthAgo } });
 
@@ -525,6 +531,9 @@ const DashboardStats=async(req,res)=>{
         // New Vendors
         const newVendors = await vendorDB.find({ createdAt: { $gte: oneMonthAgo } });
 
+        const totalUsers = await userDB.find().countDocuments();
+        const totalVendors=await vendorDB.find().countDocuments();
+        
         // Return all the stats
         res.status(200).json({
             totalSales,
@@ -533,7 +542,9 @@ const DashboardStats=async(req,res)=>{
             newUsers: newUsers.length,
             newProducts: newProducts.length,
             newOrders: newOrders.length,
-            newVendors: newVendors.length
+            newVendors: newVendors.length,
+            totalUsers: totalUsers,
+            totalVendors: totalVendors
         });
     } catch (error) {
         res.status(500).json({ message: error.message });

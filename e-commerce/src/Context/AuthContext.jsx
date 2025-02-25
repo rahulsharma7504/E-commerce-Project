@@ -10,6 +10,7 @@ import { useUserApiContext } from './UserContext/UserApiContext';
 import { useAdminDashBoard } from './AdminContext/DashboardStats';
 // Create context
 export const AuthContext = createContext();
+const apiUrl = process.env.REACT_APP_API_URL;
 
 // Custom hook to access AuthContext easily
 export const useAuth = () => useContext(AuthContext);
@@ -24,14 +25,22 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);  // Loading is initially true
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   // Function to fetch user data
-  const fetchUser = async () => {
+  const fetchUser = async (token) => {
     try {
+      console.log(token)
       setLoading(true);  // Start loading when fetching user data
+      const apiUrl = process.env.REACT_APP_API_URL;
 
-      const response = await axios.get(`${apiUrl}/user`, { withCredentials: true });
+      const axiosInstance = axios.create({
+        baseURL: apiUrl,
+      });
+      const response = await axiosInstance.get('/user', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      }); 
 
       if (response.data) {
         setUser(response.data);

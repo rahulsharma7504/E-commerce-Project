@@ -18,7 +18,16 @@ export const VendorProvider = ({ children }) => {
     const fetchVendors = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${apiUrl}/admin/all-vendors`, { withCredentials: true });
+            const token=sessionStorage.getItem('token');
+            if(!token){
+              return;
+            }
+            
+            const response = await axios.get(`${apiUrl}/admin/all-vendors`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
             setVendors(response.data); // Set the vendors in the state
         } catch (error) {
             toast.error(error.response.data.message);
@@ -32,7 +41,15 @@ export const VendorProvider = ({ children }) => {
     const createVendor = async (vendorData) => {
         setLoading(true);
         try {
-            const response = await axios.post(`${apiUrl}/admin/create-vendor`, { vendorData }, { withCredentials: true });
+            const token=sessionStorage.getItem('token');
+            if(!token){
+                return;
+            }
+            const response = await axios.post(`${apiUrl}/admin/create-vendor`, { vendorData }, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
             if (response.status === 201) {
                 toast.success(response.data.message);
                 fetchVendors(); // Fetch updated vendors list
@@ -49,13 +66,22 @@ export const VendorProvider = ({ children }) => {
     const updateVendor = async (userId, updatedData) => {
         setLoading(true);
         try {
-            const response = await axios.put(`${apiUrl}/admin/update-vendor`, { userId, updatedData }, { withCredentials: true });
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
+            const response = await axios.put(`${apiUrl}/admin/update-vendor`, { userId, updatedData }, { 
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true 
+            });
             if (response.status === 200) {
                 toast.success(response.data.message); 
-                fetchVendors(); // Fetch updated vendors list
+                await fetchVendors(); // Fetch updated vendors list
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Something went wrong');
             console.error(error);
         } finally {
             setLoading(false);
@@ -66,13 +92,22 @@ export const VendorProvider = ({ children }) => {
     const deleteVendor = async (userId) => {
         setLoading(true);
         try {
-           const res= await axios.delete(`${apiUrl}/admin/delete-vendor/${userId}`,{withCredentials: true});
-            if(res.status === 200) {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
+
+            const res = await axios.delete(`${apiUrl}/admin/delete-vendor/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (res.status === 200) {
                 toast.success(res.data.message);
-                fetchVendors(); // Fetch updated vendors list
+                await fetchVendors(); // Fetch updated vendors list
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Something went wrong');
             console.error(error);
         } finally {
             setLoading(false);

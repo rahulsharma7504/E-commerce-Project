@@ -14,7 +14,15 @@ export const AdminDashBoardProvider = ({ children }) => {
     const fetchAdminStats = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/dashboard-stats`, { withCredentials: true });
+          const token = sessionStorage.getItem('token');
+          if (!token) {
+              return;
+          }
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/dashboard-stats`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             setAdminStats(response.data);
         } catch (error) {
             toast.error(error?.response?.data?.message);

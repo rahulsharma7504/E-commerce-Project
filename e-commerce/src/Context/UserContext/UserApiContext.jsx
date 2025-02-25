@@ -36,7 +36,12 @@ const UserApiProvider = ({ children }) => {
 
 
             // Send GET request to fetch cart items by userId
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cart-items/${user?._id}`, { withCredentials: true });
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/cart-items/${user?._id}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
 
             if (response.status === 200) {
                 setCart(response.data);
@@ -56,7 +61,12 @@ const UserApiProvider = ({ children }) => {
             const userId = JSON.parse(localStorage.getItem('user'))?._id
 
             // Sending DELETE request to remove item from cart
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/cart/${userId}/${productId}`, { withCredentials: true });
+            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/cart/${userId}/${productId}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
 
             // Update the cart state after deleting item
             if (response.status === 200) {
@@ -93,7 +103,12 @@ const UserApiProvider = ({ children }) => {
                 productId
             };
 
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/cart-add`, body, { withCredentials: true });
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/cart-add`, body, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
 
             if (response.status === 200) {
                 toast.success(response.data.message);
@@ -139,13 +154,22 @@ const UserApiProvider = ({ children }) => {
         };
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/order/create-order`, orderData, { withCredentials: true });
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/order/create-order`, orderData, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
 
             if (response.status === 201) {
                 toast.success('Order placed successfully');
                 const { orderId } = response.data;
                 handlePayment(orderId, total);
 
+            } else {
+
+                console.error('Error placing order:', response.data.message);
+                toast.error('Failed to place order. Please try again.');
             }
 
             // Proceed to payment
@@ -159,7 +183,12 @@ const UserApiProvider = ({ children }) => {
             const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-razorpay-order`, {
                 amount: total * 100, // Convert to paise
                 orderId,
-            }, { withCredentials: true });
+            }, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
 
             // Razorpay payment options
             const options = {
@@ -183,9 +212,13 @@ const UserApiProvider = ({ children }) => {
                     };
 
                     // Send payment details to backend
-                    await axios.post(`${process.env.REACT_APP_API_URL}/payment/verify-payment`, paymentDetails, { withCredentials: true });
+                    await axios.post(`${process.env.REACT_APP_API_URL}/payment/verify-payment`, paymentDetails, {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                        }
+                    });
                     // If payment is successful, you can proceed to update the order status in your backend or display a success message here
-
 
                     alert('Payment Successful');
                     fetchCartItemsByProductId();
@@ -230,7 +263,12 @@ const UserApiProvider = ({ children }) => {
     const fetchProfileOrders = async () => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/order/user-orders/${user._id}`, { withCredentials: true });
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/order/user-orders/${user._id}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
             if (response.status === 200) {
                 setOrders(response.data.orders);
             }
@@ -244,7 +282,12 @@ const UserApiProvider = ({ children }) => {
     const fetchprofileReviews = async () => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/user-reviews/${user._id}`, { withCredentials: true });
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/user-reviews/${user._id}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
             if (response.status === 200) {
                 setReviews(response.data.reviews);
             }

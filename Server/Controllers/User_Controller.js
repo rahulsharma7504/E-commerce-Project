@@ -30,7 +30,7 @@ const Register = async (req, res) => {
         if (existingUser) return res.status(400).json({ message: 'User already exists' })
 
         // Hash Password
-        const hashedPassword = await bcrypt.hash(password, 20);
+        const hashedPassword = await bcrypt.hash(password, 8);
 
         const user = new userDB({
             name,
@@ -50,43 +50,34 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
     try {
-        console.time('loginProcess'); // Start profiling
-
         const { email, password } = req.body;
-        console.log(email, password);
 
-        // Find user with indexed query
-        const user = await userDB.findOne({ email }).exec();
+        console.time("Login Process");
 
-        if (!user) {
-            return res.status(401).send({ message: 'User does not exist' });
-        }
-        if (user.status === 'inActive') {
-            return res.status(400).json({ message: "Your Account is Not Active" });
-        } 
+        // Indexed User Search
+        const user = await userDB.findOne({ email }).lean().exec();
 
-        // Compare password
+        console.timeLog("Login Process", "User fetched");
+
+        if (!user) return res.status(401).send({ message: 'User does not exist' });
+        if (user.status === 'inActive') return res.status(400).json({ message: "Your Account is Not Active" });
+
+        // Password Comparison
+        console.log(bcrypt.getRounds(user.password)); // Yeh salt rounds bata dega
+
         const passwordMatch = await bcrypt.compare(password, user.password);
+        console.timeLog("Login Process", "Password compared");
 
-        if (!passwordMatch) {
-            return res.status(400).json({ message: 'Invalid password' });
-        }
+        if (!passwordMatch) return res.status(400).json({ message: 'Invalid password' });
 
-        // Generate JWT
-        const token = JWT.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: '14d', // Optional: Set token expiration
-        });
+        // JWT Token Generation
+        const token = JWT.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '14d', algorithm: 'HS256' });
+        console.timeLog("Login Process", "Token generated");
 
-        // Store token in httpOnly cookie
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',  // Use 'None' for cross-origin requests
-        });
-        
- 
-        // Send success response
+        console.timeEnd("Login Process");
+
         return res.status(200).json({ message: "Login successful", token });
+
     } catch (error) {
         console.error("Login Error:", error);
         return res.status(500).json({ message: "Internal Server Error" });
@@ -94,40 +85,46 @@ const Login = async (req, res) => {
 };
 
 
+
 const ForgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        console.log(email)
-        // Check if the user exists
-        const user = userDB.find({ email: email });
+        console.log(`🔍 Checking email: ${email}`);
+
+        // Find user without lean() so we can use user.save()
+        const user = await userDB.findOne({ email }).exec();
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
+            return res.status(404).json({ message: '❌ User not found.' });
         }
 
-        // Create a reset token (in a real app, use a more secure method)
+        // Generate reset token
         const resetToken = randomString.generate({
             length: 20,
             charset: 'alphanumeric',
-        })
-        user.token = resetToken;
-        await user.save();
+        });
+
+        // Update token directly
+        await userDB.updateOne({ _id: user._id }, { token: resetToken });
+
         // Send the reset email
         sendResetEmail(email, resetToken);
 
-        return res.status(200).json({ message: 'Password reset link sent to email.' });
+        return res.status(200).json({ message: '✅ Password reset link sent to email.' });
 
     } catch (error) {
-
+        console.error('❌ Forgot Password Error:', error);
+        return res.status(500).json({ message: 'Internal Server Error.' });
     }
-}
+};
+
  
 const ResetPassword = async (req, res) => { 
     try {
         const { token, newPassword } = req.body;
 
         // Find the user with the reset token and check if the token is valid
-        const user = userDB.find({ token: token });
+        const user = await userDB.findOne({ token: token });
 
         if (!user) {
             return res.status(400).json({ message: 'Invalid or expired token.' });

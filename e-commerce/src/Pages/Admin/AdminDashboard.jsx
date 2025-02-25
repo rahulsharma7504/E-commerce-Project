@@ -24,7 +24,7 @@ const Admin = () => {
                 <FaUser />
               </div>
               <Card.Title>Total Users</Card.Title>
-              <Card.Text className={styles.cardText}>{adminStats?.newUsers}</Card.Text>
+              <Card.Text className={styles.cardText}>{adminStats?.totalUsers}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -36,7 +36,7 @@ const Admin = () => {
                 <FaStore />
               </div>
               <Card.Title>Total Vendors</Card.Title>
-              <Card.Text className={styles.cardText}>{adminStats?.newVendors}</Card.Text>
+              <Card.Text className={styles.cardText}>{adminStats?.totalVendors}</Card.Text>
             </Card.Body>
           </Card>
         </Col>

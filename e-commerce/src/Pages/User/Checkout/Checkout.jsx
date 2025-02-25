@@ -40,7 +40,11 @@ const Checkout = () => {
     const handleSaveBilling = async () => {
         try {
             const userId = JSON.parse(localStorage.getItem('user'))?._id;
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/checkout/${userId}`, billingDetails, { withCredentials: true });
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/checkout/${userId}`, billingDetails, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
+            });
             if (response.status === 201) {
                 toast.success('Billing details saved successfully!');
                 setIsBillingSaved(response.data.billing);

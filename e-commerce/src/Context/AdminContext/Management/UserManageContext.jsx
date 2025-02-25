@@ -14,8 +14,16 @@ export const UserProvider = ({ children }) => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
             // Replace with your API call or data fetching logic
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/all-users`, { withCredentials: true });
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/admin/all-users`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             setUsers(response.data);
 
@@ -30,11 +38,11 @@ export const UserProvider = ({ children }) => {
     const deleteUser = async (userId) => {
         try {
             const res = await axios.delete(`${process.env.REACT_APP_API_URL}/admin/delete-user`, { userId }, { withCredentials: true });
-            if(res.status === 200) {
+            if (res.status === 200) {
                 toast.success(res.data.message);
                 fetchUsers();
             }
-        
+
         } catch (err) {
             toast.error(err.message);
         }
@@ -43,7 +51,16 @@ export const UserProvider = ({ children }) => {
     // Function to change user status
     const changeUserStatus = async (userId, status) => {
         try {
-            const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/update-user-status`, { userId, status }, { withCredentials: true });
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                return;
+            }
+
+            const res = await axios.put(`${process.env.REACT_APP_API_URL}/admin/update-user-status`, { userId, status }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if (res.status === 200) {
                 toast.success(res.data.message);
 
@@ -55,7 +72,7 @@ export const UserProvider = ({ children }) => {
     };
 
     // UseEffect to fetch users when the component mounts
-    
+
 
     return (
         <UserContext.Provider value={{ users, fetchUsers, setUsers, loading, deleteUser, changeUserStatus }}>

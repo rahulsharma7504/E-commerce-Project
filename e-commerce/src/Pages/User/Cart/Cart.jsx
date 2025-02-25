@@ -106,7 +106,7 @@ const Cart = () => {
                             <div className="pt-2">
                                 <div className="d-flex justify-content-between mt-2">
                                     <h5>Total</h5>
-                                    <h5><FaRupeeSign />{Number(cart?.totalPrice) + 10} </h5>
+                                    <h5><FaRupeeSign />{cart?.totalPrice ? Number(cart?.totalPrice) + 10 :   10} </h5>
                                 </div>
                                 <button
                                     className="btn btn-block btn-primary font-weight-bold my-3 py-3"

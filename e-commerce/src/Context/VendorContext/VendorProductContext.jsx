@@ -46,6 +46,7 @@ export const VendorProductProvider = ({ children }) => {
                 {
                     withCredentials: true,
                     headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data', // Correct Content-Type for file uploads
                     },
                 }
@@ -53,11 +54,12 @@ export const VendorProductProvider = ({ children }) => {
 
             if (res.status === 201) {
                 toast.success(res.data.message);
-                getVendorProducts();
+                await getVendorProducts();
                 setLoading(false);
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong');
+            setLoading(false);
         }
     };
 
@@ -70,14 +72,18 @@ export const VendorProductProvider = ({ children }) => {
         try {
             setLoading(true);
             // Replace with your API call or data fetching logic
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/product/${vendorId}`, { withCredentials: true });
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/product/${vendorId}`, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                }
+            });
             if (response.status === 200) {
                 setProducts(response.data)
                 setLoading(false);
             }
-        }
-        catch (err) {
-            toast.error(err.response.data.message);
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Something went wrong');
+            setLoading(false);
         }
     };
 
@@ -111,6 +117,7 @@ export const VendorProductProvider = ({ children }) => {
                 {
                     withCredentials: true,
                     headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data', // Correct Content-Type for file uploads
                     },
                 }
@@ -118,7 +125,7 @@ export const VendorProductProvider = ({ children }) => {
 
             if (res.status === 200) {
                 toast.success(res.data.message);
-                getVendorProducts();
+                await getVendorProducts();
                 setLoading(false);
             }
         } catch (error) {
@@ -129,14 +136,19 @@ export const VendorProductProvider = ({ children }) => {
     // Function to delete a product
     const deleteProduct = async (productID) => {
         try {
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/vendor/product/${productID}`, { withCredentials: true });
+            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/vendor/product/${productID}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
+            });
             if (response.status === 200) {
                 toast.success(response.data.message);
-                getVendorProducts();
+                await getVendorProducts();
             }
 
         } catch (error) {
-            toast.error(error.response.data.message)
+            toast.error(error.response?.data?.message || 'Something went wrong');
         }
     };
 
@@ -146,7 +158,11 @@ export const VendorProductProvider = ({ children }) => {
             // Correct way to pass vendorId as query parameter
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/analytics`, {
                 params: { vendorId }, // vendorId ko query parameter ke roop mein bheje
-                withCredentials: true
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
+
             });
             if (res.status === 200) {
                 setAnalyticsData(res.data);
@@ -171,7 +187,10 @@ export const VendorProductProvider = ({ children }) => {
             setLoading(true);
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/all-orders`, {
                 params: { vendorId }, // vendorId ko query parameter ke roop mein bheje
-                withCredentials: true
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
             });
             if (res.status === 200) {
                 setAllOrders(res.data.data);
@@ -194,7 +213,10 @@ export const VendorProductProvider = ({ children }) => {
             setLoading(true);
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/vendor/all-sales`, {
                 params: { vendorId }, // vendorId ko query parameter ke roop mein bheje
-                withCredentials: true
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                },
             });
             if (res.status === 200) {
                 setAllSales(res.data);

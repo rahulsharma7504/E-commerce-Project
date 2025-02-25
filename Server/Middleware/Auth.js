@@ -1,20 +1,31 @@
-const dotenv=require('dotenv').config();
+const dotenv = require('dotenv').config();
 const JWT = require('jsonwebtoken');
 
-const  Secure = async (req, res, next) => {
-    try {
-        const token = req.cookies.token; // Access token directly
-        if (!token) {
-            return res.status(401).send({ message: 'Please Login First' });
-        }
+const Secure = (req, res, next) => {
+    const authHeader = req.headers?.authorization;
 
-        // Verify the token
-        const decode = JWT.verify(token, process.env.JWT_SECRET);
-        req.user = decode; // Attach user data to the request
-        next(); // Proceed to the next middleware or route
-    } catch (error) {
-        console.error("Token Verification Error:", error.message); // Debugging log
-        return res.status(401).send({ message: 'Invalid Token' });
+    if (!authHeader) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const token = authHeader?.split(' ')[1]; // Extract the token from the "Bearer <token>" format
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        JWT.verify(token, 'qwertyuiopasdfghjklzxcvbnm', (err, user) => {
+            if (err) {
+                console.error('Token verification error:', err);
+                return res.status(401).json({ message: "Invalid token" });
+            }
+            req.user = user;
+            next();
+        });
+    } catch (err) {
+        console.error('Token verification exception:', err);
+        return res.status(403).json({ message: 'Invalid token' });
     }
 };
 
