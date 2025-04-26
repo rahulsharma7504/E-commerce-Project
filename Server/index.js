@@ -1,5 +1,4 @@
 const dotenv = require('dotenv').config()
-const {ParserServer}=require('parse-server')
 const { ConnectDB } = require("./DB/DB"); 
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -23,17 +22,13 @@ app.use(cors({
 app.use(cookieParser());
 
 
-const api = new ParseServer({
-    databaseURI: process.env.MONGO_URI, // 👈 Mongo Atlas URI
-    cloud: './cloud/main.js',
-    appId: process.env.APP_ID,
-    masterKey: process.env.MASTER_KEY,
-    serverURL: process.env.SERVER_URL,
-    allowClientClassCreation: true,
-  });
 
 
-  app.use('/parse', api);
+app.get('/',(req, res) => {
+    res.send('🔥 E-commerce Backend is Running Fine!');
+  }
+);
+
 
 app.options('*', cors());  // This handles OPTIONS requests for all routes
 
