@@ -231,11 +231,11 @@ const Checkout = () => {
                             <div className="border-bottom pt-3 pb-2">
                                 <div className="d-flex justify-content-between mb-3">
                                     <h6>Subtotal</h6>
-                                    <h6>${subtotal}</h6>
+                                    <h6> <FaRupeeSign />{subtotal}</h6>
                                 </div>
                                 <div className="d-flex justify-content-between">
                                     <h6 className="font-weight-medium">Shipping</h6>
-                                    <h6 className="font-weight-medium">${shipping}</h6>
+                                    <h6 className="font-weight-medium"> <FaRupeeSign />{shipping}</h6>
                                 </div>
                             </div>
 

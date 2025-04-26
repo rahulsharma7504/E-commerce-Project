@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         },
       }); 
 
-      if (response.data) {
+      if (response.status === 200) {
         setUser(response.data);
         setGlobalUser(response.data)
         localStorage.setItem('user', JSON.stringify(response.data)); // Store user data in localStorage
@@ -80,7 +80,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Failed to fetch user data', error);
-      toast.error('Failed to fetch user data. Please try again.');
       setUser(null); // Set user to null if error occurs
     } finally {
       setLoading(false); // Set loading to false after fetching data

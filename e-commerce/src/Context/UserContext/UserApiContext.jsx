@@ -192,7 +192,7 @@ const UserApiProvider = ({ children }) => {
 
             // Razorpay payment options
             const options = {
-                key: process.env.REACT_APP_RAZORPAY_KEY, // Ensure your Razorpay Key is correct
+                key: process.env.REACT_APP_RAZORPAY_ID, // Ensure your Razorpay Key is correct
                 amount: data.order.amount, // Amount in paise
                 currency: 'INR', // Currency code
                 name: 'Multi_Shop App', // Your company or app name

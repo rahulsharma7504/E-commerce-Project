@@ -3,7 +3,6 @@ const { ConnectDB } = require("./DB/DB");
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
-const CORS = require('cors');
 const body_parser = require('body-parser');
 app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true }));
