@@ -147,8 +147,8 @@ const ResetPassword = async (req, res) => {
 
 const UserProfile = async (req, res) => {
     try {
-        const user = await userDB.findById(req.user.userId).select('-password'); // Exclude password from response
-        res.json(user);
+        const user = await userDB.findById(req.user.userId).select('-password').exec(); // Exclude password from response
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: "Failed to retrieve user data" });
     }
@@ -157,7 +157,6 @@ const UserProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
-        console.log(req.body)
         // Check if email exists
         const existingUser = await userDB.findOne({ email: email });
         if (existingUser) return res.status(400).send({ message: 'Email already exists' });

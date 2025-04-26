@@ -11,10 +11,10 @@ const sendResetEmail = (email, resetToken) => {
 
     });
 
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetUrl = `https://e-commerce-project-client-side.onrender.com/reset-password/${resetToken}`;
 
     const mailOptions = {
-        from: 'rahul68541@gmail.com',
+        from: 'rahul658541@gmail.com',
         to: email,
         subject: 'Password Reset Request',
         text: `You requested a password reset.\n\n Click the following link to reset your password: ${resetUrl}`,

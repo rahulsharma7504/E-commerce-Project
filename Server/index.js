@@ -7,13 +7,16 @@ const CORS = require('cors');
 const body_parser = require('body-parser');
 app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true }));
-app.use(express.json())
+app.use(express.json()) 
+
+ 
+
 // Use CORS for Client Side Requests
 
-const cors = require('cors');
+const cors = require('cors'); 
 
 app.use(cors({
-    origin: 'http://localhost:3000',  // Your frontend URL
+    origin: 'https://e-commerce-project-client-side.onrender.com',  // Your frontend URL
     credentials: true,  // If you're using cookies or sessions
 }));
 app.use(cookieParser());
